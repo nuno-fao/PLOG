@@ -18,4 +18,20 @@
 
 ## Representação Interna do Estado de Jogo
 
->
+- O tabuleiro de jogo original tem 7 filas com 4 a 7 hexágonos pequenos de maneira a representar um hexágono maior. No entanto, para conseguirmos desenhar o tabuleiro como pretendido em PROLOG teremos de o desenhar na vertical (com 13 filas "intercaladas" cada uma com 1 a 4 hexágonos) o que não altera logística do jogo em si.
+
+-  O tabuleiro será iniciado assim: ![tabuleiro inicial](./img/Tabuleiro1.png)
+
+-  Numa fase intermédia do jogo o tabuleiro estaria num estado idêntico a este: ![tabuleiro intermédio](./img/Tabuleiro2.png)
+
+-  Numa fase intermédia do jogo o tabuleiro estaria num estado idêntico a este: ![tabuleiro intermédio](./img/Tabuleiro2.png)
+
+-  O jogo acaba quando não houver mais peças para jogar e sendo assim o tabuleiro tanto pode estar completamente vazio como com várias peças mas nunca com 4 ou mais da mesma cor adjacentes. ![tabuleiro final](./img/Tabuleiro3.png)
+
+
+
+R red
+B blue
+Jogador atual 0/1
+Peças duas listas de 2 elementos
+Peças capturadas duas listas de 2 elementos
