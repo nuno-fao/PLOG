@@ -9,8 +9,24 @@
 
 
 ## Descrição do Jogo
+O tabuleiro do jogo é hexagonal cada espaço sendo também um hexágono:
+>![tabuleiro](./img/tabuleiro.jpg)
 
-Neste jogo cada jogador dispõe de 15 peças (10 da cor dele e 5 da cor do adversário). Um à vez coloca uma peça no tabuleiro que como um íman atrai peças de cor diferente e afasta de cor igual que já estejam na área de jogo até bater noutra ou na borda/void (apenas a peça mais próxima em cada uma das 6 direções é afetada). Se após uma jogada houver 4 ou mais peças adjacentes da mesma cor, o jogador dessa cor recolhe-as e adiciona à área de risco ou bónus consoante estão nas bordas (void) ou não, respetivamente. Quando não houver mais jogadas calcula-se os pontos finais de cada um para descobrir o vencedor.
+As bordas do hexágono são mais escuras porque são chamadas de void em que a única diferença comparadas com os restantes espaços é o valor duma peça que é recolhida dessa zona (explicado em mais detalhe à frente). Cada jogador dispõe também duma zona de bónus e outra de risco para onde vão as peças depois de pontuadas.
+
+Cada jogador dispõe de 15 peças (10 da cor dele e 5 da cor do adversário). Um à vez os jogadores colocam uma peça da cor que desejarem no tabuleiro que como um íman atrai peças de cor diferente e afasta de cor igual que já estejam na área de jogo até bater noutra peça ou na borda/void (isto afeta apenas a primeira peça em cada uma das 6 direções). 
+
+Se após uma jogada houver 4 ou mais peças adjacentes da mesma cor, o jogador dessa cor tem de as recolher e colocar numa das duas zonas, se a peça estiver num espaço void vai para a zona de risco e caso contrário vai para a zona de bónus. 
+
+Quando não houver mais peças para jogar o jogo acaba e as que ficaram no tabuleiro permanecem lá dado que vão ser importantes para calcular as pontuações finais. 
+
+As pontuações são calculadas da seguinte maneira:
+- Cada peça na zona bónus vale 1 ponto.
+- Se no fim do jogo um jogador tiver mais peças da sua cor na zona void do que o outro este terá de subtrair um ponto por cada peça que tem na zona de risco. 
+- Depois destes cálculos feitos, o jogador com mais pontos ganha.
+- Em caso de empate é considerado vencedor o jogador com menos peças da sua cor em zonas void.
+- Se mesmo assim houver empate é considerado vencedor o jogador com menos peças na zona de risco.
+- Se o empate persistir, por improvável que seja, ambos os jogadores são considerados vencedores.
 
 Página oficial do jogo: https://nestorgames.com/#gauss_detail
 
