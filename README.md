@@ -36,9 +36,9 @@ Rulebook: https://nestorgames.com/rulebooks/GAUSS_EN.pdf
 
 - O tabuleiro de jogo original tem 7 filas com 4 a 7 hexágonos pequenos de maneira a representar um hexágono maior. No entanto, para conseguirmos desenhar o tabuleiro como pretendido em PROLOG teremos de o desenhar na vertical (com 13 filas "intercaladas" cada uma com 1 a 4 hexágonos) o que não altera logística do jogo em si.
 
-- As peças dos dois jogadores serão representadas por uma lista com 2 elementos cada uma representando quantas peças de cada cor tem. Essas duas listas serão guardadas numa outra lista de peças.
+- As peças dos jogadores são representadas por uma lista de duas listas. A primeira lista representa as peças do jogador 0 e a segunda as peças do jogador 1. Cada elemento da lista de um jogador representa o numero de peças não usadas. [[PeçasVermelhas0,PeçasAzuis0],[PeçasVermelhas1,PeçasAzuis1]]
 
-- Peças recolhidas serão guardadas de maneira idêntica às que ainda não foram jogadas só que cada index em vez de representar uma cor, representa área de bónus ou risco.
+- Peças recolhidas serão guardadas de maneira idêntica às que ainda não foram jogadas só que em vez de jogadores temos área de risco e área de bónus.[[BonusVermelho,BonusAzul],[RiscoVermelho,RiscoAzul]]
 
 - O jogador atual será guardado como um inteiro que terá o valor de 0 ou 1 para indicar o turno.
 
