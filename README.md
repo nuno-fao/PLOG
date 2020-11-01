@@ -63,8 +63,10 @@ Acima do tabuleiro será indicado o número de peças que cada jogador ainda dis
 
 Novamente dentro do tabuleiro, cada canto será identificado como zona de bónus ou risco de cada jogador e terá um inteiro que representa o número de peças efetivamente nessa zona. Este inteiro será atualizado quando for necessário mover uma peça do interior do tabuleiro para a respetiva zona.
 
-O output deste predicado num estado inicial, intermédio e final seria respetivamente: 
+O output deste predicado num estado inicial, intermédio* e final* seria respetivamente: 
 
 >![output inicial](./img/output_inicial.png)
 >![output intermédio](./img/output_int.png)
 >![output final](./img/output_final.png)
+
+*Nota: Para efeitos desta entrega o estado intermédio e final foram hard coded
