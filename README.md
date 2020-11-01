@@ -2,10 +2,10 @@
 
 ## Jogo: Gauss
 
-| Name                      | Turma     | Number    | E-Mail               |
-| ------------------------- | --------- | --------- | ------------------   |
-| Luís Miguel Pinto         |     2     | 201806206 | up201806206@fe.up.pt |
-| Nuno Oliveira             |     2     | 201806525 | up201806525@fe.up.pt |
+| Name                          | Turma     | Number    | E-Mail               |
+| ----------------------------- | --------- | --------- | -------------------- |
+| Luís Miguel Afonso Pinto      |     2     | 201806206 | up201806206@fe.up.pt |
+| Nuno Filipe Amaral Oliveira   |     2     | 201806525 | up201806525@fe.up.pt |
 
 
 ## Descrição do Jogo
