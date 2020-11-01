@@ -40,11 +40,11 @@ Rulebook: https://nestorgames.com/rulebooks/GAUSS_EN.pdf
 
 - Peças recolhidas serão guardadas de maneira idêntica às que ainda não foram jogadas só que cada index em vez de representar uma cor, representa área de bónus ou risco.
 
-- O jogador atual será guardado como um inteiro que terá o valor de 1 ou 2 para indicar o turno.
+- O jogador atual será guardado como um inteiro que terá o valor de 0 ou 1 para indicar o turno.
 
 - O estado de jogo a cada instante é constituído pelo tabuleiro, as peças por jogar, as peças na zona de bónus e risco de cada jogador e finalmente de quem é a vez de colocar uma peça no tabuleiro.
 
-- Internamente no tabuleiro ' ', 'r' e 'b' representam vazio, peça vermelha e peça azul, respetivamente. 
+- Internamente no tabuleiro ' ', 'R' e 'B' representam vazio, peça vermelha e peça azul, respetivamente. 
 
 -  O tabuleiro, peças por jogar e peças na zonas de  recolha serão iniciados assim: 
 >![estado inicial](./img/estado_inicial.png)
@@ -59,6 +59,12 @@ Rulebook: https://nestorgames.com/rulebooks/GAUSS_EN.pdf
 ## Visualização do estado de jogo
 O predicado responsável pela visualização do estado de jogo a cada instante recebe o tabuleiro, peças por jogar, peças recolhidas, o turno e um elemento extra que começa em 1 e vai sendo iterado para saber qual a fila a desenhar dado que desenhar um tabuleiro com espaços hexagonais com elementos ASCII é relativamente complexo. A cada fila remove-se a HEAD da cópia da lista do tabuleiro para se desenhar os valores certos no tabuleiro. 
 
-Acima do tabuleiro terá 4 números (2 de cada lado) para representar a quantidade de peças de cada cor dos jogadores.
+Acima do tabuleiro será indicado o número de peças que cada jogador ainda dispõe para jogar. Para além disso, no meio dessa informação será escrito quem é a próxima jogada. 
 
-Novamente dentro do tabuleiro, cada canto será identificado como zona de bónus ou risco de cada jogador e terá um inteiro que vai ser atualizado quando for necessário mover uma peça do interior do tabuleiro para a respetiva zona.
+Novamente dentro do tabuleiro, cada canto será identificado como zona de bónus ou risco de cada jogador e terá um inteiro que representa o número de peças efetivamente nessa zona. Este inteiro será atualizado quando for necessário mover uma peça do interior do tabuleiro para a respetiva zona.
+
+O output deste predicado num estado inicial, intermédio e final seria respetivamente: 
+
+>![output inicial](./img/output_inicial.png)
+>![output intermédio](./img/output_int.png)
+>![output final](./img/output_final.png)
