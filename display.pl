@@ -1,15 +1,15 @@
 	
 %imprime as informações do estado de cada jogador e chama a predicado que imprime o tabuleiro
 %display_game(+GameState,+Player)
-display_game([Board|[[[UnusedRed0|[UnusedBlue0|_]]|[[UnusedRed1|[UnusedBlue1|A]]]]|[OutPieces|_]]],Player):-
+display_game(gameState(Board,unusedPieces(UnusedRed0,UnusedBlue0,UnusedRed1,UnusedBlue1),OutPieces,Player),Player):-
     format("Jogador 0                 Vez do Jogador                 Jogador 1~n",[]),	
-    format("Red Pieces: ~p                    ~p                   Red Pieces: ~p~n",[UnusedRed0,Player,UnusedRed1]),	
+    format("Red Pieces: ~p                   ~p                    Red Pieces: ~p~n",[UnusedRed0,Player,UnusedRed1]),	
     format("Blue Pieces: ~p                                      Blue Pieces: ~p~n",[UnusedBlue0,UnusedBlue1]),	
     print_line(Board,OutPieces).
 
 %predicado que imprime o tabuleiro(uma vez que o tabuleiro varia o seu tamanho, cada linha tem uma forma de imprimir diferente)
 %print_line(+GameState)
-print_line([[Elem|_] | RestoLista],[[RedPointPiece|[BluePointPiece|_]]|VoidPieces]) :-
+print_line([[Elem|_] | RestoLista],outPieces(RedPointPiece,BluePointPiece,VoidPieces1,VoidPieces2)) :-
     NumLinha = 1,
     format("__________________________________________________________________~n",[]),
     format("|                                4                               |~n",[]),
@@ -17,7 +17,7 @@ print_line([[Elem|_] | RestoLista],[[RedPointPiece|[BluePointPiece|_]]|VoidPiece
     format("|Blue Bonus               3   /     \\   5               Red Bonus|~n",[]),
     format("|Pieces: ~p              _____/   ~p   \\_____             Pieces: ~p|~n",[BluePointPiece,Elem,RedPointPiece]),
     N1 is NumLinha +1,
-    print_line(N1,RestoLista,VoidPieces),
+    print_line(N1,RestoLista,[VoidPieces1,VoidPieces2]),
     !.
 print_line(NumLinha,[Elem | RestoLista],OutPieces) :-
     NumLinha = 2,
@@ -58,7 +58,7 @@ print_line(NumLinha,[Elem | RestoLista],OutPieces) :-
     N1 is NumLinha +1,
     print_line(N1,RestoLista,OutPieces),
     !.
-print_line(NumLinha,[Elem | _],[VoidPieces|_]) :-
+print_line(NumLinha,[Elem | _],VoidPieces) :-
     NumLinha = 13,
     format("|Red Risk             \\       /     \\       /           Blue Risk|~n",[]),
     format("|                      \\_____/   ~p   \\_____/                     |~n",Elem),
