@@ -2,7 +2,7 @@
 %imprime as informações do estado de cada jogador e chama a predicado que imprime o tabuleiro
 %display_game(+GameState,+Player)
 display_game(gameState(Board,unusedPieces(UnusedRed0,UnusedBlue0,UnusedRed1,UnusedBlue1),OutPieces,Player),Player):-
-    format("Jogador 0                 Vez do Jogador                 Jogador 1~n",[]),	
+    format("~n~n~n~n~n~n~n~n~n~n~n~n~n~n~n~n~n~n~n~nJogador 0                 Vez do Jogador                 Jogador 1~n",[]),	
     format("Red Pieces: ~p                   ~p                    Red Pieces: ~p~n",[UnusedRed0,Player,UnusedRed1]),	
     format("Blue Pieces: ~p                                      Blue Pieces: ~p~n",[UnusedBlue0,UnusedBlue1]),	
     print_line(Board,OutPieces).
@@ -14,8 +14,8 @@ print_line([[Elem|_] | RestoLista],outPieces(RedPointPiece,BluePointPiece,VoidPi
     format("__________________________________________________________________~n",[]),
     format("|                                4                               |~n",[]),
     format("|                              _____                             |~n",[]),
-    format("|Blue Bonus               3   /     \\   5               Red Bonus|~n",[]),
-    format("|Pieces: ~p              _____/   ~p   \\_____             Pieces: ~p|~n",[BluePointPiece,Elem,RedPointPiece]),
+    format("|Red Bonus                3   /     \\   5              Blue Bonus|~n",[]),
+    format("|Pieces: ~p              _____/   ~p   \\_____             Pieces: ~p|~n",[RedPointPiece,Elem,BluePointPiece]),
     N1 is NumLinha +1,
     print_line(N1,RestoLista,[VoidPieces1,VoidPieces2]),
     !.
