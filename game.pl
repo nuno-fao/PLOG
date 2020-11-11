@@ -1,5 +1,7 @@
 :- use_module(library(lists)).
 :- consult('display.pl').
+:- consult('end.pl').
+:- consult('moves.pl').
 
 %devolve o Board inicial
 %board(-Board)
@@ -36,15 +38,16 @@ play :-
 loop(GameState,Winner) :-
   Winner = -1,
   read(Read),
+  format("~p~n",Read),
 	get_player(GameState,Player),
+  valid_moves(GameState,Player,ListOfMoves),
+  format("~p~n",[ListOfMoves]),
   display_game(GameState,Player),
   game_over(GameState,Winner1),
   loop(GameState,Winner1),
   !.
-
-loop(GameState,Winner) :-
+loop(_,Winner) :-
   format("Winner: ~p~n",[Winner]).
-
 loop(GameState) :-
   loop(GameState,-1).
 
@@ -63,11 +66,9 @@ initial(GameState) :-
 %get_player(+GameState,-Player)
 get_player(gameState(_,_,_,Player),Player).
 
-put(GameState).
-
 get_number_void(Board,Red,Blue) :-
   get_number_void(Board,Red,Blue,0).
-get_number_void([L1|Tail],Red,Blue,N):-
+get_number_void([_|Tail],Red,Blue,N):-
   N>3,
   N<9,
   even(N),

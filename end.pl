@@ -21,43 +21,43 @@ get_winner(P1,P2,_,_,_,Winner) :-
   P1 < P2,
   Winner is 1,
   !.
-get_winner(P1,P2,Red,Blue,OutPieces,Winner) :-
+get_winner(P1,P2,_,_,_,Winner) :-
   P2 < P1,
   Winner is 0,
   !.
-get_winner(P1,P2,Red,Blue,OutPieces,Winner) :-
+get_winner(_,_,Red,Blue,_,Winner) :-
   Red < Blue,
   Winner is 0,
   !.
-get_winner(P1,P2,Red,Blue,OutPieces,Winner) :-
+get_winner(_,_,Red,Blue,_,Winner) :-
   Blue < Red,
   Winner is 1,
   !.
-get_winner(P1,P2,Red,Blue,outPieces(_,_,R0,R1),Winner) :-
+get_winner(_,_,_,_,outPieces(_,_,R0,R1),Winner) :-
   R0 < R1,
   Winner is 0,
   !.
-get_winner(P1,P2,Red,Blue,outPieces(_,_,R0,R1),Winner) :-
+get_winner(_,_,_,_,outPieces(_,_,R0,R1),Winner) :-
   R1 < R0,
   Winner is 1,
   !.
-get_winner(P1,P2,Red,Blue,outPieces(_,_,R0,R1),Winner) :-
+get_winner(_,_,_,_,_,Winner) :-
   Winner is 2.
 
 
 
 
-get_points(P1,P2,Red,Blue,outPieces(B0,B1,R0,R1)) :-
+get_points(P1,P2,Red,Blue,outPieces(B0,B1,R0,_)) :-
   Red > Blue,
   P1 is B0 - R0,
   P2 is B1,
   !.
-get_points(P1,P2,Red,Blue,outPieces(B0,B1,R0,R1)) :-
+get_points(P1,P2,Red,Blue,outPieces(B0,B1,_,R1)) :-
   Blue > Red,
   P1 is B0,
   P2 is B1 - R1,
   !.
-get_points(P1,P2,Red,Blue,outPieces(B0,B1,R0,R1)) :-
+get_points(P1,P2,_,_,outPieces(B0,B1,_,_)) :-
   P1 is B0,
   P2 is B1.
 
