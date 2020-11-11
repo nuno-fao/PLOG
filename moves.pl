@@ -28,7 +28,49 @@ check_line([H|T],Row,List) :-
     append(List1,List2,List).
 
 %acabou
-check_line(_,_,List):-
+check_line(_,_,List) :-
     List = [].
 
-    
+
+get_col(Line,Col,Out) :-
+    (Col = 2 ; 
+    Col = 1 ; 
+    ((Col = 3 ; Col = 4), Line = 1) ; 
+    (Col = 3 , Line = 6) ; 
+    (Col = 4 , Line = 7)),
+    Out is 0,
+    !.
+
+get_col(Line,Col,Out) :-
+    (Col = 3 ; 
+    Col = 4 ; 
+    Col = 5, (Line=1; Line=6)),
+    Out is 1,
+    !.
+
+get_col(_,Col,Out) :-
+    (Col = 6; Col = 5),
+    Out is 2.
+
+get_col(_,Col,Out) :-
+    Col = 7,
+    Out is 3.
+
+get_line(Line,Col,Out) :-
+    Col < 5,
+    Aux1 is Line - 1,
+    Aux2 is 2*Aux1,
+    Dif is 4 - Col,
+    Out is Aux2 + Dif.
+
+get_line(Line,Col,Out) :- 
+    Aux1 is Line - 1,
+    Aux2 is 2*Aux1,
+    Dif is mod(Col,4),
+    Out is Aux2 + Dif.
+
+change_to_internal(Col,Line) :-
+    get_col(Line,Col,Out1),
+    get_line(Line,Col,Out2),
+    format("Linha ~p Coluna ~p ~n",[Out2,Out1]).
+
