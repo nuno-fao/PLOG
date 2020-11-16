@@ -41,7 +41,7 @@ loop(GameState,Winner) :-
   read(Read),
   read(Column),
   read(Line),
-  checkValidColour(Read),
+  (Read = 'r';Read = 'b'),
 
   Target =.. [target,Read,Column,Line],
   move(GameState,Target,NewGameState),

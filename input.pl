@@ -16,6 +16,3 @@ replace_nth0(List, Index, OldElem, NewElem, NewList) :-
    nth0(Index,List,OldElem,Transfer),
    % predicate works backwards: Index,NewElem,Transfer -> NewList
    nth0(Index,NewList,NewElem,Transfer).
-
-checkValidColour(Read):-
-    (Read = 'r';Read = 'b').
