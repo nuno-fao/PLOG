@@ -13,10 +13,6 @@ game_over(gameState(Board,unusedPieces(R0,B0,R1,B1),OutPieces,_),Winner) :-
 game_over(_,Winner) :-
   Winner is -1.
 
-
-
-
-
 get_winner(P1,P2,_,_,_,Winner) :-
   P1 < P2,
   Winner is 1,

@@ -2,6 +2,7 @@
 :- consult('display.pl').
 :- consult('end.pl').
 :- consult('moves.pl').
+:- consult('input.pl').
 
 %devolve o Board inicial
 %board(-Board)
@@ -38,14 +39,30 @@ play :-
 loop(GameState,Winner) :-
   Winner = -1,
   read(Read),
-  format("~p~n",Read),
-	get_player(GameState,Player),
-  valid_moves(GameState,Player,ListOfMoves),
+  read(Column),
+  read(Line),
+  checkValidColour(Read),
+
+  Target =.. [target,Read,Column,Line],
+  move(GameState,Target,NewGameState),
+
+	get_player(NewGameState,Player),
+  valid_moves(NewGameState,Player,ListOfMoves),
   format("~p~n",[ListOfMoves]),
-  display_game(GameState,Player),
-  game_over(GameState,Winner1),
-  loop(GameState,Winner1),
+  display_game(NewGameState,Player),
+  game_over(NewGameState,Winner1),
+  loop(NewGameState,Winner1),
   !.
+
+loop(GameState,Winner) :-
+  Winner = -1,
+  game_over(GameState,Winner),
+  format("Invalid Input~n",[]),
+  loop(GameState,Winner),
+  !.
+
+
+
 loop(_,Winner) :-
   format("Winner: ~p~n",[Winner]).
 loop(GameState) :-
