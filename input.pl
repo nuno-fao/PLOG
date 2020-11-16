@@ -1,6 +1,7 @@
 move(gameState(Board,UnusedPieces,OutPieces,Player),target(Colour,X,Y),NewGameState):-
     check_empty_pos(X,Y,Result),
     Result = ' ',
+    
     nth0(X,Board,Linha),
     replace_nth0(Linha,Y,' ',Colour,NewLinha),
     replace_nth0(Board,X,Linha,NewLinha,NewBoard),

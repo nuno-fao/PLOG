@@ -74,3 +74,9 @@ change_to_internal(Col,Line) :-
     get_line(Line,Col,Out2),
     format("Linha ~p Coluna ~p ~n",[Out2,Out1]).
 
+change_to_internal(Col,Line,NewCol,NewLine) :-
+    get_col(Line,Col,NewCol),
+    get_line(Line,Col,NewLine),
+    format("Linha ~p Coluna ~p ~n",[NewLine,NewCol]).
+
+

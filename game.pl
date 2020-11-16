@@ -38,10 +38,17 @@ play :-
 
 loop(GameState,Winner) :-
   Winner = -1,
+  format("Which piece to Use(r or b): ",[]),
   read(Read),
-  read(Column),
-  read(Line),
   (Read = 'r';Read = 'b'),
+  format("Which Column to put It: ",[]),
+  read(Column1),
+  (Column1 >0, Column1 <8),
+  format("Which Line to put It: ",[]),
+  read(Line1),
+  (Line1 >0, Line1 <8),
+
+  change_to_internal(Column1, Line1, Line, Column),
 
   Target =.. [target,Read,Column,Line],
   move(GameState,Target,NewGameState),
