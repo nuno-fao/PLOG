@@ -119,6 +119,20 @@ replace_nth0(List, Index, OldElem, NewElem, NewList) :-
    % predicate works backwards: Index,NewElem,Transfer -> NewList
    nth0(Index,NewList,NewElem,Transfer).
 
+%mexe uma peça de cor Color de (XI,YI) para (XF,YF) em valores internos
+movePiece(Board,Color,XI,YI,XF,YF,NewBoard) :-
+    %mete vazio na inicial
+    nth0(XI,Board,Linha),
+    replace_nth0(Linha,YI,Color,' ',NewLinha),
+    replace_nth0(Board,XI,Linha,NewLinha,BoardInt),
+
+    %mete color no target 
+    nth0(XF,BoardInt,Linha1),
+    replace_nth0(Linha1,YF,' ',Color,NewLinha1),
+    replace_nth0(BoardInt,XF,Linha1,NewLinha1,NewBoard).
+
+
+
 moveUp(Board, XI, YI):-
     checkUp(Board,XI,YI,ColumnO,LineO,PieceO),
     format("UP: ~p ~p ~p ~n",[ColumnO,LineO,PieceO]),
