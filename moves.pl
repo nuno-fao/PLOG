@@ -106,12 +106,12 @@ move(gameState(Board,UnusedPieces,OutPieces,Player),target(Colour,X, Y, ColumnP,
     moveUp(NewBoard,Colour,ColumnP,LineP,Board1),
     moveUpRight(Board1,Colour,ColumnP,LineP,Board2),
     moveUpLeft(Board2,Colour,ColumnP,LineP,Board3),
-    %moveDown(Board3,Colour,ColumnP,LineP,Board4),
+    moveDown(Board3,Colour,ColumnP,LineP,Board4),
     %moveDownRight(Board4,Colour,ColumnP,LineP,Board5),
     %moveDownLeft(Board5,Colour,ColumnP,LineP,Board6),
 
 
-    NewGameState =.. [gameState,Board3,UnusedPieces,OutPieces,Player],
+    NewGameState =.. [gameState,Board4,UnusedPieces,OutPieces,Player],
     !.
 
 replace_nth0(List, Index, OldElem, NewElem, NewList) :-
@@ -234,27 +234,44 @@ getVoidUpLeft(XI,YI,XV,YV):-    %chegou ao void
     XV = XI,
     YV = YI.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+%Move a primeira peça para baixo
 moveDown(Board, Color, XI, YI, NewBoard):-
-    checkDown(Board,XI,YI,ColumnO,LineO,PieceO),
-    format("DOWN: ~p ~p ~p ~n",[ColumnO,LineO,PieceO]),
+    getDownPosition(XI,YI,XT,YT),    %obter posição imediatamente abaixo para começar a verificar
+    checkDown(Board,XT,YT,ColumnO,LineO,PieceO),      %obter peça mais próxima, se não encontrar muda de instanciação
+    format("UP: ~p ~p ~p ~n",[ColumnO,LineO,PieceO]),      
+    applyMoveDown(Board,Color,XI,YI,ColumnO,LineO,PieceO,NewBoard),   %peça encontrada agora falta movê-la
     !.
 moveDown(Board,_,_,_,NewBoard):-
+    NewBoard = Board,       %nada acontece, copia board e segue jogo    
     format("DOWN: NADA~n",[]).
+applyMoveDown(Board,Color,XColocado,YColocado,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):-
+    Color \= ColorEncontrada, !,    %quando as peças são de cor diferente
+    getDownPosition(XColocado,YColocado,XT,YT),       %obtem posição imediatamente abaixo da que foi colocada
+    movePiece(Board,ColorEncontrada,XEncontrado,YEncontrado,XT,YT,NewBoard).        %move a peça para a posição obtida no predicado em cima
+applyMoveDown(Board,Color,_,_,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):-
+    Color = ColorEncontrada,    %quando as peças são de cor igual
+    getDownPosition(XEncontrado,YEncontrado,XT,YT),   %obtem posição imediatamente abaixo da peça encontrada
+    checkDown(Board,XT,YT,ColumnO,LineO,_),   %procura outra peça abaixo desta para colidir, se não houver passa à seguinte instanciação
+    getUpPosition(ColumnO,LineO,TargetX,TargetY),     %obtem posição acima da nova encontrada, que é para lá onde se vai mover a primeira peça encontrada
+    movePiece(Board,ColorEncontrada,XEncontrado,YEncontrado,TargetX,TargetY,NewBoard),  %mover a peça
+    !.
+applyMoveDown(Board,_,XColocado,YColocado,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):- 
+    getVoidDown(XColocado,YColocado,XT,YT),   %obtem a célula void encontrada na direção down
+    movePiece(Board,ColorEncontrada,XEncontrado,YEncontrado,XT,YT,NewBoard).    %move a peça para a zona void encontrada
+    getVoidDown(XI,YI,XV,YV):-    %obtem a célula void encontrada na direção down
+    verifyNotInVoid(XI,YI), %ainda não chegou ao void
+    !,
+    getDownPosition(XI,YI,X1,Y1),
+    getVoidDown(X1,Y1,XV,YV).
+getVoidDown(XI,YI,XV,YV):-    %chegou ao void
+    XV = XI,
+    YV = YI.
+
+
+
+
+
+
 
 
 moveDownRight(Board, Color, XI, YI, NewBoard):-
@@ -262,6 +279,7 @@ moveDownRight(Board, Color, XI, YI, NewBoard):-
     format("DOWN RIGHT: ~p ~p ~p ~n",[ColumnO,LineO,PieceO]),
     !.
 moveDownRight(Board,_,_,_,NewBoard):-
+    NewBoard = Board,       %nada acontece, copia board e segue jogo    
     format("DOWN RIGHT: NADA~n",[]).
 
 
@@ -270,6 +288,7 @@ moveDownLeft(Board, Color, XI, YI, NewBoard):-
     format("Down LEFT: ~p ~p ~p ~n",[ColumnO,LineO,PieceO]),
     !.
 moveDownLeft(Board,_,_,_,NewBoard):-
+    NewBoard = Board,       %nada acontece, copia board e segue jogo    
     format("Down LEFT: NADA~n",[]).
 
 %Procura a primeira peça diretamente abaixo
