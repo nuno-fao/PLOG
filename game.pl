@@ -6,7 +6,7 @@
 %devolve o Board inicial
 %board(-Board)
 board([
-            ['r'],  
+            [' '],  
           [' ',' '],
         [' ',' ',' '],
       [' ',' ',' ',' '],
