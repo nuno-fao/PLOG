@@ -104,7 +104,11 @@ move(gameState(Board,UnusedPieces,OutPieces,Player),target(Colour,X, Y, ColumnP,
 
     format("Point: ~p ~p ~n",[ColumnP,LineP]),
     moveUp(Board,ColumnP,LineP),
+    moveUpRight(Board,ColumnP,LineP),
+    moveUpLeft(Board,ColumnP,LineP),
     moveDown(Board,ColumnP,LineP),
+    moveDownRight(Board,ColumnP,LineP),
+    moveDownLeft(Board,ColumnP,LineP),
 
     NewGameState =.. [gameState,NewBoard,UnusedPieces,OutPieces,Player],
     !.
@@ -122,12 +126,40 @@ moveUp(Board, XI, YI):-
 moveUp(_,_,_):-
     format("UP: NADA~n",[]).
 
+moveUpRight(Board, XI, YI):-
+    checkUpRight(Board,XI,YI,ColumnO,LineO,PieceO),
+    format("UP RIGHT: ~p ~p ~p ~n",[ColumnO,LineO,PieceO]),
+    !.
+moveUpRight(_,_,_):-
+    format("UP RIGHT: NADA~n",[]).
+
+moveUpLeft(Board, XI, YI):-
+    checkUpLeft(Board,XI,YI,ColumnO,LineO,PieceO),
+    format("UP LEFT: ~p ~p ~p ~n",[ColumnO,LineO,PieceO]),
+    !.
+moveUpLeft(_,_,_):-
+    format("UP LEFT: NADA~n",[]).
+
 moveDown(Board, XI, YI):-
     checkDown(Board,XI,YI,ColumnO,LineO,PieceO),
     format("DOWN: ~p ~p ~p ~n",[ColumnO,LineO,PieceO]),
     !.
 moveDown(_,_,_):-
     format("DOWN: NADA~n",[]).
+
+moveDownRight(Board, XI, YI):-
+    checkDownRight(Board,XI,YI,ColumnO,LineO,PieceO),
+    format("DOWN RIGHT: ~p ~p ~p ~n",[ColumnO,LineO,PieceO]),
+    !.
+moveDownRight(_,_,_):-
+    format("DOWN RIGHT: NADA~n",[]).
+
+moveDownLeft(Board, XI, YI):-
+    checkDownLeft(Board,XI,YI,ColumnO,LineO,PieceO),
+    format("Down LEFT: ~p ~p ~p ~n",[ColumnO,LineO,PieceO]),
+    !.
+moveDownLeft(_,_,_):-
+    format("Down LEFT: NADA~n",[]).
 
 checkUp(Board, XI, YI, XO, YO, PieceO):-
     verifyInBoard(XI,YI),
@@ -163,6 +195,74 @@ checkDown(Board, XI, YI, XO, YO, PieceO):-
     getDownPosition(XI,YI,X,Y),
     !,
     checkDown(Board,X,Y,XO,YO,PieceO).
+
+checkDownLeft(Board, XI, YI, XO, YO, PieceO):-
+    verifyInBoard(XI,YI),
+    change_to_internal(XI,YI,XX,YY),
+    nth0(YY,Board,Linha),
+    nth0(XX,Linha,Piece),
+    Piece \= ' ',
+    PieceO = Piece,
+    XO is XI,
+    YO is YI,
+    !.
+
+checkDownLeft(Board, XI, YI, XO, YO, PieceO):-
+    verifyInBoard(XI,YI),
+    getDownLeftPosition(XI,YI,X,Y),
+    !,
+    checkDownLeft(Board,X,Y,XO,YO,PieceO).
+
+checkDownRight(Board, XI, YI, XO, YO, PieceO):-
+    verifyInBoard(XI,YI),
+    change_to_internal(XI,YI,XX,YY),
+    nth0(YY,Board,Linha),
+    nth0(XX,Linha,Piece),
+    Piece \= ' ',
+    PieceO = Piece,
+    XO is XI,
+    YO is YI,
+    !.
+
+checkDownRight(Board, XI, YI, XO, YO, PieceO):-
+    verifyInBoard(XI,YI),
+    getDownRightPosition(XI,YI,X,Y),
+    !,
+    checkDownRight(Board,X,Y,XO,YO,PieceO).
+
+checkUpLeft(Board, XI, YI, XO, YO, PieceO):-
+    verifyInBoard(XI,YI),
+    change_to_internal(XI,YI,XX,YY),
+    nth0(YY,Board,Linha),
+    nth0(XX,Linha,Piece),
+    Piece \= ' ',
+    PieceO = Piece,
+    XO is XI,
+    YO is YI,
+    !.
+
+checkUpLeft(Board, XI, YI, XO, YO, PieceO):-
+    verifyInBoard(XI,YI),
+    getUpLeftPosition(XI,YI,X,Y),
+    !,
+    checkUpLeft(Board,X,Y,XO,YO,PieceO).
+
+checkUpRight(Board, XI, YI, XO, YO, PieceO):-
+    verifyInBoard(XI,YI),
+    change_to_internal(XI,YI,XX,YY),
+    nth0(YY,Board,Linha),
+    nth0(XX,Linha,Piece),
+    Piece \= ' ',
+    PieceO = Piece,
+    XO is XI,
+    YO is YI,
+    !.
+
+checkUpRight(Board, XI, YI, XO, YO, PieceO):-
+    verifyInBoard(XI,YI),
+    getUpRightPosition(XI,YI,X,Y),
+    !,
+    checkUpRight(Board,X,Y,XO,YO,PieceO).
 
 getUpPosition(XI,YI,XO,YO):-
     XO is XI,
