@@ -104,14 +104,14 @@ move(gameState(Board,UnusedPieces,OutPieces,Player),target(Colour,X, Y, ColumnP,
 
     format("Point: ~p ~p ~n",[ColumnP,LineP]),
     moveUp(NewBoard,Colour,ColumnP,LineP,Board1),
-    %moveUpRight(Board,Colour,ColumnP,LineP,Board2),
-    %moveUpLeft(Board,Colour,ColumnP,LineP,Board3),
-    %moveDown(Board,Colour,ColumnP,LineP,Board4),
-    %moveDownRight(Board,Colour,ColumnP,LineP,Board5),
-    %moveDownLeft(Board,Colour,ColumnP,LineP,Board6),
+    moveUpRight(Board1,Colour,ColumnP,LineP,Board2),
+    %moveUpLeft(Board2,Colour,ColumnP,LineP,Board3),
+    %moveDown(Board3,Colour,ColumnP,LineP,Board4),
+    %moveDownRight(Board4,Colour,ColumnP,LineP,Board5),
+    %moveDownLeft(Board5,Colour,ColumnP,LineP,Board6),
 
 
-    NewGameState =.. [gameState,Board1,UnusedPieces,OutPieces,Player],
+    NewGameState =.. [gameState,Board2,UnusedPieces,OutPieces,Player],
     !.
 
 replace_nth0(List, Index, OldElem, NewElem, NewList) :-
@@ -135,7 +135,7 @@ movePiece(Board,Color,XI,YI,XF,YF,NewBoard) :-
     replace_nth0(BoardInt,XX2,Linha1,NewLinha1,NewBoard).
 
 
-
+%Move a primeira peça acima
 moveUp(Board, Color, XI, YI, NewBoard):-
     getUpPosition(XI,YI,XT,YT),    %obter posição imediatamente acima para começar a verificar
     checkUp(Board,XT,YT,ColumnO,LineO,PieceO),      %obter peça mais próxima, se não encontrar muda de instanciação
@@ -157,23 +157,54 @@ applyMoveUp(Board,Color,_,_,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):-
     movePiece(Board,ColorEncontrada,XEncontrado,YEncontrado,TargetX,TargetY,NewBoard),  %mover a peça
     !.
 applyMoveUp(Board,_,XColocado,YColocado,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):- 
-    getVoidUpLeft(XColocado,YColocado,XT,YT),   %obtem a célula void encontrada na direção Up
+    getVoidUp(XColocado,YColocado,XT,YT),   %obtem a célula void encontrada na direção Up
     movePiece(Board,ColorEncontrada,XEncontrado,YEncontrado,XT,YT,NewBoard).    %move a peça para a zona void encontrada
-getVoidUpLeft(XI,YI,XV,YV):-    %obtem a célula void encontrada na direção Up
+getVoidUp(XI,YI,XV,YV):-    %obtem a célula void encontrada na direção Up
     verifyNotInVoid(XI,YI), %ainda não chegou ao void
     !,
     getUpPosition(XI,YI,X1,Y1),
-    getVoidUpLeft(X1,Y1,XV,YV).
-getVoidUpLeft(XI,YI,XV,YV):-    %chegou ao void
+    getVoidUp(X1,Y1,XV,YV).
+getVoidUp(XI,YI,XV,YV):-    %chegou ao void
     XV = XI,
     YV = YI.
 
+%Move a primeira peça up right
 moveUpRight(Board, Color, XI, YI, NewBoard):-
-    checkUpRight(Board,XI,YI,ColumnO,LineO,PieceO),
-    format("UP RIGHT: ~p ~p ~p ~n",[ColumnO,LineO,PieceO]),
+    getUpRightPosition(XI,YI,XT,YT),    %obter posição imediatamente up right para começar a verificar
+    checkUpRight(Board,XT,YT,ColumnO,LineO,PieceO),      %obter peça mais próxima, se não encontrar muda de instanciação
+    format("UP: ~p ~p ~p ~n",[ColumnO,LineO,PieceO]),      
+    applyMoveUpRight(Board,Color,XI,YI,ColumnO,LineO,PieceO,NewBoard),   %peça encontrada agora falta movê-la
     !.
-moveUpRight(_,_,_,_,_):-
+moveUpRight(Board,_,_,_,NewBoard):-
+    NewBoard = Board,       %nada acontece, copia board e segue jogo
     format("UP RIGHT: NADA~n",[]).
+applyMoveUpRight(Board,Color,XColocado,YColocado,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):-
+    Color \= ColorEncontrada, !,    %quando as peças são de cor diferente
+    getUpRightPosition(XColocado,YColocado,XT,YT),       %obtem posição imediatamente up right da que foi colocada
+    movePiece(Board,ColorEncontrada,XEncontrado,YEncontrado,XT,YT,NewBoard).        %move a peça para a posição obtida no predicado em cima
+applyMoveUpRight(Board,Color,_,_,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):-
+    Color = ColorEncontrada,    %quando as peças são de cor igual
+    getUpRightPosition(XEncontrado,YEncontrado,XT,YT),   %obtem posição imediatamente acima da peça encontrada
+    checkUpRight(Board,XT,YT,ColumnO,LineO,_),   %procura outra peça up right desta para colidir, se não houver passa à seguinte instanciação
+    getDownLeftPosition(ColumnO,LineO,TargetX,TargetY),     %obtem posição down left da nova encontrada, que é para lá onde se vai mover a primeira peça encontrada
+    movePiece(Board,ColorEncontrada,XEncontrado,YEncontrado,TargetX,TargetY,NewBoard),  %mover a peça
+    !.
+applyMoveUpRight(Board,_,XColocado,YColocado,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):- 
+    getVoidUpRight(XColocado,YColocado,XT,YT),   %obtem a célula void encontrada na direção Up Right
+    movePiece(Board,ColorEncontrada,XEncontrado,YEncontrado,XT,YT,NewBoard).    %move a peça para a zona void encontrada
+    getVoidUpRight(XI,YI,XV,YV):-    %obtem a célula void encontrada na direção Up Right
+    verifyNotInVoid(XI,YI), %ainda não chegou ao void
+    !,
+    getUpRightPosition(XI,YI,X1,Y1),
+    getVoidUpRight(X1,Y1,XV,YV).
+getVoidUpRight(XI,YI,XV,YV):-    %chegou ao void
+    XV = XI,
+    YV = YI.
+
+
+
+
+
 
 
 moveUpLeft(Board, Color, XI, YI, NewBoard):-
