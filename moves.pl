@@ -142,8 +142,7 @@ checkUp(Board, XI, YI, XO, YO, PieceO):-
 
 checkUp(Board, XI, YI, XO, YO, PieceO):-
     verifyInBoard(XI,YI),
-    X is XI,
-    Y is YI -1,
+    getUpPosition(XI,YI,X,Y),
     !,
     checkUp(Board,X,Y,XO,YO,PieceO).
 
@@ -161,7 +160,50 @@ checkDown(Board, XI, YI, XO, YO, PieceO):-
 
 checkDown(Board, XI, YI, XO, YO, PieceO):-
     verifyInBoard(XI,YI),
-    X is XI,
-    Y is YI +1,
+    getDownPosition(XI,YI,X,Y),
     !,
     checkDown(Board,X,Y,XO,YO,PieceO).
+
+getUpPosition(XI,YI,XO,YO):-
+    XO is XI,
+    YO is YI - 1.
+
+getDownPosition(XI,YI,XO,YO):-
+    XO is XI,
+    YO is YI + 1.
+
+getUpRightPosition(XI,YI,XO,YO):-
+    YI < 4,
+    XO is XI + 1,
+    YO is YI.
+getUpRightPosition(XI,YI,XO,YO):-
+    YI > 3,
+    XO is XI + 1,
+    YO is YI - 1.
+
+getUpLeftPosition(XI,YI,XO,YO):-
+    YI > 4,
+    XO is XI - 1,
+    YO is YI.
+getUpLeftPosition(XI,YI,XO,YO):-
+    YI < 5,
+    XO is XI - 1,
+    YO is YI - 1.
+
+getDownRightPosition(XI,YI,XO,YO):-
+    YI < 4,
+    XO is XI + 1,
+    YO is YI +1.
+getDownRightPosition(XI,YI,XO,YO):-
+    YI > 3,
+    XO is XI + 1,
+    YO is YI.
+
+getDownLeftPosition(XI,YI,XO,YO):-
+    YI > 4,
+    XO is XI - 1,
+    YO is YI + 1.
+getDownLeftPosition(XI,YI,XO,YO):-
+    YI < 5,
+    XO is XI - 1,
+    YO is YI.
