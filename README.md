@@ -7,7 +7,7 @@
 | Luís Miguel Afonso Pinto      |     2     | 201806206 | up201806206@fe.up.pt |
 | Nuno Filipe Amaral Oliveira   |     2     | 201806525 | up201806525@fe.up.pt |
 
-## Instalação e execuçaõ
+## Instalação e execução
 Para além da instalação do SICStus Prolog 4.6 não é preciso instalar mais nada. Tendo os ficheiros todos com o código fonte é apenas necessário abrir o sicstus pela linha de comandos (sistemas UNIX) ou usando a GUI (sistemas Windows) e consultar o ficheiro 'game.pl' que consulta os restantes ficheiros necessários automaticamente. 
 
 ## Descrição do Jogo
