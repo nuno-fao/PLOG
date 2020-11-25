@@ -36,67 +36,6 @@ check_line(_,_,List) :-
     !.
 
 
-get_col(Line,Col,Out) :-
-    (Col = 2 ; 
-    Col = 1 ; 
-    ((Col = 3 ; Col = 4), Line = 1) ; 
-    (Col = 3 , Line = 6) ; 
-    (Col = 4 , Line = 7)),
-    Out is 0,
-    !.
-
-get_col(Line,Col,Out) :-
-    (Col = 3 ; 
-    Col = 4 ; 
-    Col = 5, (Line=1; Line=6)),
-    Out is 1,
-    !.
-
-get_col(_,Col,Out) :-
-    (Col = 6; Col = 5),
-    Out is 2,
-    !.
-
-get_col(_,Col,Out) :-
-    Col = 7,
-    Out is 3,
-    !.
-
-get_line(Line,Col,Out) :-
-    Col < 5,
-    Aux1 is Line - 1,
-    Aux2 is 2*Aux1,
-    Dif is 4 - Col,
-    Out is Aux2 + Dif,
-    !.
-
-get_line(Line,Col,Out) :- 
-    Aux1 is Line - 1,
-    Aux2 is 2*Aux1,
-    Dif is mod(Col,4),
-    Out is Aux2 + Dif,
-    !.
-
-verifyNotInVoid(Col,Line):-
-    Col > 1,
-    Col < 7,
-    Line > 1,
-    Line < 7,
-    (Col = 4 ; ((Col = 2; Col = 6), Line < 5 ); ((Col = 3; Col = 5), Line < 6)).
-
-
-verifyInBoard(Col,Line):-
-    Col > 0,
-    Col < 8,
-    Line > 0,
-    Line < 8,
-    (Col = 4 ; Col = 1; Col = 7; ((Col = 2; Col = 6), Line < 6 ); ((Col = 3; Col = 5), Line < 7)).
-
-change_to_internal(Col,Line,NewCol,NewLine) :-
-    get_col(Line,Col,NewCol),
-    get_line(Line,Col,NewLine),
-    print([Col,Line,NewCol,NewLine]).
-
 move(gameState(Board,UnusedPieces,OutPieces,Player),target(Colour,X, Y, ColumnP, LineP),NewGameState):-
     nth0(X,Board,Linha),
     replace_nth0(Linha,Y,' ',Colour,NewLinha),
@@ -123,8 +62,8 @@ replace_nth0(List, Index, OldElem, NewElem, NewList) :-
 
 %mexe uma peça de cor Color de (XI,YI) para (XF,YF) em valores externos
 movePiece(Board,Color,XI,YI,XF,YF,NewBoard) :-
-    change_to_internal(XI,YI,YY1,XX1),
-    change_to_internal(XF,YF,YY2,XX2),
+    ext_to_int(XI,YI,YY1,XX1),
+    ext_to_int(XF,YF,YY2,XX2),
     %mete vazio na inicial
     nth0(XX1,Board,Linha),
     replace_nth0(Linha,YY1,Color,' ',NewLinha),
@@ -337,7 +276,7 @@ getVoidDownLeft(XI,YI,XV,YV):-    %chegou ao void
 %Procura a primeira peça diretamente abaixo
 checkDown(Board, XI, YI, XO, YO, PieceO):-
     verifyInBoard(XI,YI),
-    change_to_internal(XI,YI,XX,YY),
+    ext_to_int(XI,YI,XX,YY),
     nth0(YY,Board,Linha),
     nth0(XX,Linha,Piece),
     Piece \= ' ',
@@ -354,7 +293,7 @@ checkDown(Board, XI, YI, XO, YO, PieceO):-
 %Procura a primeira peça down left
 checkDownLeft(Board, XI, YI, XO, YO, PieceO):-
     verifyInBoard(XI,YI),
-    change_to_internal(XI,YI,XX,YY),
+    ext_to_int(XI,YI,XX,YY),
     nth0(YY,Board,Linha),
     nth0(XX,Linha,Piece),
     Piece \= ' ',
@@ -371,7 +310,7 @@ checkDownLeft(Board, XI, YI, XO, YO, PieceO):-
 %Procura a primeira peça down right
 checkDownRight(Board, XI, YI, XO, YO, PieceO):-
     verifyInBoard(XI,YI),
-    change_to_internal(XI,YI,XX,YY),
+    ext_to_int(XI,YI,XX,YY),
     nth0(YY,Board,Linha),
     nth0(XX,Linha,Piece),
     Piece \= ' ',
@@ -388,7 +327,7 @@ checkDownRight(Board, XI, YI, XO, YO, PieceO):-
 %Procura a primeira peça diretamente acima
 checkUp(Board, XI, YI, XO, YO, PieceO):-
     verifyInBoard(XI,YI),
-    change_to_internal(XI,YI,XX,YY),
+    ext_to_int(XI,YI,XX,YY),
     nth0(YY,Board,Linha),
     nth0(XX,Linha,Piece),
     Piece \= ' ',
@@ -405,7 +344,7 @@ checkUp(Board, XI, YI, XO, YO, PieceO):-
 %Procura a primeira peça up left
 checkUpLeft(Board, XI, YI, XO, YO, PieceO):-
     verifyInBoard(XI,YI),
-    change_to_internal(XI,YI,XX,YY),
+    ext_to_int(XI,YI,XX,YY),
     nth0(YY,Board,Linha),
     nth0(XX,Linha,Piece),
     Piece \= ' ',
@@ -422,7 +361,7 @@ checkUpLeft(Board, XI, YI, XO, YO, PieceO):-
 %Procura a primeira peça up right
 checkUpRight(Board, XI, YI, XO, YO, PieceO):-
     verifyInBoard(XI,YI),
-    change_to_internal(XI,YI,XX,YY),
+    ext_to_int(XI,YI,XX,YY),
     nth0(YY,Board,Linha),
     nth0(XX,Linha,Piece),
     Piece \= ' ',

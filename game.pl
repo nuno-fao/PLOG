@@ -2,6 +2,7 @@
 :- consult('display.pl').
 :- consult('end.pl').
 :- consult('moves.pl').
+:- consult('board_map.pl').
 
 %devolve o Board inicial
 %board(-Board)
@@ -44,9 +45,8 @@ loop(GameState,Winner) :-
   read(Column1),
   format("Which Line to put It: ",[]),
   read(Line1),
-  change_to_internal(Column1,Line1,A,B),
   verifyNotInVoid(Column1, Line1),
-  change_to_internal(Column1, Line1, Line, Column),
+  ext_to_int(Column1, Line1, Line, Column),
   format("~p ~p~n",[Line,Column]),
   Target =.. [target,Read,Column,Line,Column1,Line1],
   move(GameState,Target,NewGameState),
