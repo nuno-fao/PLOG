@@ -109,6 +109,7 @@ move(gameState(Board,UnusedPieces,OutPieces,Player),target(Colour,X, Y, ColumnP,
     moveDownRight(Board4,Colour,ColumnP,LineP,Board5),
     moveDownLeft(Board5,Colour,ColumnP,LineP,Board6),
 
+    search_board(Board,OutPieces,NewBoard,NewOutPieces,0,0),
 
     NewGameState =.. [gameState,Board6,UnusedPieces,OutPieces,Player],
     !.
@@ -478,3 +479,36 @@ getDownLeftPosition(XI,YI,XO,YO):-
     XI < 5,
     XO is XI - 1,
     YO is YI.
+
+iterate_line(Board,InitL,InitC,[X,Y,Colour]):-
+    print([InitL,InitC]),
+    nth0(InitL,Board,Linha),
+    nth0(InitC,Linha,Pos),
+    Pos \= ' ',
+    !,
+    X = InitL,
+    Y = InitC,
+    Colour = Pos,
+    print([X,Y,Colour]).
+
+iterate_line(Board,InitL,InitC,[X,Y,Colour]):-
+    nth0(InitL,Board,Linha),
+    nth0(InitC,Linha,Pos),
+    C is InitC + 1,
+    !,
+    iterate_line(Board,InitL,C,[X,Y,Colour]).
+
+iterate_line(Board,InitL,InitC,[X,Y,Colour]):-
+    nth0(InitL,Board,Linha),
+    !.
+iterate_line(Board,InitL,InitC,[X,Y,Colour]):-
+    nth0(InitL,Board,Linha),
+    nth0(InitC,Linha,Pos),
+    C is 0,
+    L is InitL +1,
+    iterate_line(Board,L,C,[X,Y,Colour]).
+
+
+search_board(Board,OutPieces,NewBoard,NewOutPieces,InitL,InitC):-
+    iterate_line(Board,0,0,Out),
+    print(Out).
