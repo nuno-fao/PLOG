@@ -493,6 +493,7 @@ iterate_col(Line,InitC,[X,Y,Colour]):-
     !,
     iterate_col(Line,C,[X,Y,Colour]).
 iterate_col(Line,InitC,[X,Y,Colour]):-
+    !,
     Y = 'X',
     Colour = 'X'.
 
@@ -501,22 +502,25 @@ iterate_line(Board,InitL,InitC,Out):-
     nth0(InitL,Board,Line),
     iterate_col(Line,InitC,[X,Y,Colour]),
     Y \= 'X',
+    !,
     Out = [InitL,Y,Colour].
 iterate_line(Board,InitL,InitC,Out):-
     InitL < 13,
     L is InitL + 1,
-    iterate_line(Board,L,InitC,Out).
-
+    !,
+    iterate_line(Board,L,0,Out).
 iterate_line(Board,InitL,InitC,[X,Y,Colour]):-
+    !,
     X = 'X',
     Y = 'X',
     Colour = 'X'.
 
 search_board(Board,OutPieces,NewBoard,NewOutPieces,InitL,InitC):-
     iterate_line(Board,InitL,InitC,Out),
+    print(Out),
+    print('\n'),
     [X,Y,Colour] = Out,
     X \= 'X',
-    print(Out),
     Y2 is Y + 1,
     !,
     search_board(Board,OutPieces,NewBoard,NewOutPieces,X,Y2).
