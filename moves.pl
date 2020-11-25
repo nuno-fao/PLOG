@@ -35,9 +35,9 @@ check_line(_,_,List) :-
     List = [],
     !.
 
-verifyAvailablePiece(unusedPieces(UnusedRed0,UnusedBlue0,UnusedRed1,UnusedBlue1),0,Colour) :-
+verifyAvailablePiece(unusedPieces(UnusedRed0,UnusedBlue0,_,_),0,Colour) :-
     verifyAvailableAux(UnusedRed0,UnusedBlue0,Colour).
-verifyAvailablePiece(unusedPieces(UnusedRed0,UnusedBlue0,UnusedRed1,UnusedBlue1),1,Colour) :-
+verifyAvailablePiece(unusedPieces(_,_,UnusedRed1,UnusedBlue1),1,Colour) :-
     verifyAvailableAux(UnusedRed1,UnusedBlue1,Colour).
 verifyAvailableAux(UnusedRed,_,'r'):-
     UnusedRed > 0.
@@ -83,8 +83,7 @@ move(gameState(Board,UnusedPieces,OutPieces,Player),target(Colour,X, Y, ColumnP,
 
     changeTurn(Player,NewPlayer),
 
-    NewGameState =.. [gameState,Board7,NewUnusedPieces,NewOutPieces,NewPlayer],
-    !.
+    NewGameState =.. [gameState,Board7,NewUnusedPieces,NewOutPieces,NewPlayer].
 
 replace_nth0(List, Index, OldElem, NewElem, NewList) :-
    % predicate works forward: Index,List -> OldElem, Transfer
@@ -453,18 +452,18 @@ getDownLeftPosition(XI,YI,XO,YO):-
     YO is YI.
 
 
-iterate_col(Line,InitC,[X,Y,Colour]):-
+iterate_col(Line,InitC,[_,Y,Colour]):-
     nth0(InitC,Line,Pos),
     Pos \= ' ',
     !,
     Y = InitC,
     Colour = Pos.
 iterate_col(Line,InitC,[X,Y,Colour]):-
-    nth0(InitC,Line,Pos),
+    nth0(InitC,Line,_),
     C is InitC + 1,
     !,
     iterate_col(Line,C,[X,Y,Colour]).
-iterate_col(Line,InitC,[X,Y,Colour]):-
+iterate_col(_,_,[_,Y,Colour]):-
     !,
     Y = 'X',
     Colour = 'X'.
@@ -472,16 +471,16 @@ iterate_col(Line,InitC,[X,Y,Colour]):-
 iterate_line(Board,InitL,InitC,Out):-
     InitL < 13,
     nth0(InitL,Board,Line),
-    iterate_col(Line,InitC,[X,Y,Colour]),
+    iterate_col(Line,InitC,[_,Y,Colour]),
     Y \= 'X',
     !,
     Out = [InitL,Y,Colour].
-iterate_line(Board,InitL,InitC,Out):-
+iterate_line(Board,InitL,_,Out):-
     InitL < 13,
     L is InitL + 1,
     !,
     iterate_line(Board,L,0,Out).
-iterate_line(Board,InitL,InitC,[X,Y,Colour]):-
+iterate_line(_,_,_,[X,Y,Colour]):-
     !,
     X = 'X',
     Y = 'X',
@@ -493,7 +492,7 @@ getColour(Board,X,Y,Colour):-
     !,
     Colour = C.
 
-getColour(Board,X,Y,Colour):-
+getColour(_,_,_,Colour):-
     Colour = ' '.
 
 search_near(Board,X,Y,Colour):-
@@ -542,7 +541,7 @@ search_board(Board,OutPieces,NewBoard,NewOutPieces,InitL,InitC):-
     removePieces(Board,OutPieces,Bolacha,NewBoardA,NewOPieces),
     search_board(NewBoardA,NewOPieces,NewBoard,NewOutPieces,X,Y2).
 
-search_board(Board,OutPieces,NewBoard,NewOutPieces,InitL,InitC):-
+search_board(Board,OutPieces,NewBoard,NewOutPieces,_,_):-
     NewBoard = Board,
     NewOutPieces = OutPieces.
 
@@ -552,7 +551,7 @@ removePieces(Board,OutPieces,Bolacha,NewBoard,NewOutPieces):-
     %print('Removing Whiskas saquetas!\n'),
     %read(_),
     removeFromList(Board,OutPieces,NewBoard,Bolacha,NewOutPieces).
-removePieces(Board,OutPieces,Bolacha,NewBoard,NewOutPieces):-
+removePieces(Board,OutPieces,_,NewBoard,NewOutPieces):-
     NewBoard = Board,
     NewOutPieces = OutPieces.
 
@@ -576,7 +575,7 @@ updatePieces(outPieces(RedPointPiece,BluePointPiece,VoidPieces1,VoidPieces2),New
     Out is RedPointPiece +1,
 	NewOutPieces =.. [outPieces,Out,BluePointPiece,VoidPieces1,VoidPieces2].
 
-updatePieces(outPieces(RedPointPiece,BluePointPiece,VoidPieces1,VoidPieces2),NewOutPieces,X,Y,Colour):-
+updatePieces(outPieces(RedPointPiece,BluePointPiece,VoidPieces1,VoidPieces2),NewOutPieces,_,_,Colour):-
     Colour = 'r',
     Out is VoidPieces1 +1,   
 	NewOutPieces =.. [outPieces,RedPointPiece,BluePointPiece,Out,VoidPieces2].
@@ -588,7 +587,7 @@ updatePieces(outPieces(RedPointPiece,BluePointPiece,VoidPieces1,VoidPieces2),New
     Out is BluePointPiece +1,    
 	NewOutPieces =.. [outPieces,RedPointPiece,Out,VoidPieces1,VoidPieces2].
 
-updatePieces(outPieces(RedPointPiece,BluePointPiece,VoidPieces1,VoidPieces2),NewOutPieces,X,Y,Colour):-
+updatePieces(outPieces(RedPointPiece,BluePointPiece,VoidPieces1,VoidPieces2),NewOutPieces,_,_,Colour):-
     Colour = 'b',
     Out is VoidPieces2 +1,    
 	NewOutPieces =.. [outPieces,RedPointPiece,BluePointPiece,VoidPieces1,Out].

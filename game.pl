@@ -52,7 +52,7 @@ loop(GameState,Winner) :-
   move(GameState,Target,NewGameState),
 	get_player(NewGameState,Player),
   
-  valid_moves(NewGameState,Player,ListOfMoves),
+  %valid_moves(NewGameState,Player,ListOfMoves),
   %format("~p~n",[ListOfMoves]),
   display_game(NewGameState,Player),
   game_over(NewGameState,Winner1),
