@@ -54,6 +54,10 @@ loop(GameState,Winner) :-
   
   %valid_moves(NewGameState,Player,ListOfMoves),
   %format("~p~n",[ListOfMoves]),
+  arg(3,GameState,OutPieces),
+  arg(1,GameState,Board),
+  calcPoints(Board,OutPieces,[P1,P2]),
+  print([P1,P2]),
   display_game(NewGameState,Player),
   game_over(NewGameState,Winner1),
   !,
@@ -87,54 +91,6 @@ initial(GameState) :-
 %percorre a lista gameState e devolve o player
 %get_player(+GameState,-Player)
 get_player(gameState(_,_,_,Player),Player).
-
-get_number_void(Board,Red,Blue) :-
-  get_number_void(Board,Red,Blue,0).
-get_number_void([_|Tail],Red,Blue,N):-
-  N>3,
-  N<9,
-  even(N),
-  !,
-  N1 is N +1,
-  get_number_void(Tail,Red,Blue,N1).
-get_number_void([L1|Tail],Red,Blue,N) :- 
-  nth0(0,L1,Piece),
-  Piece = 'b',
-  !,
-  get_right_elem(L1,Red1,Blue1),
-  N1 is N+1,
-  get_number_void(Tail,Red2,Blue2,N1),
-  B is Blue1 + Blue2,
-  AuxB is B + 1,
-  AuxR is Red1 + Red2,
-  Blue is AuxB,
-  Red is AuxR.
-get_number_void([L1|Tail],Red,Blue,N) :- 
-  nth0(0,L1,Piece),
-  Piece = 'r',
-  !,
-  get_right_elem(L1,Red1,Blue1),
-  N1 is N+1,
-  get_number_void(Tail,Red2,Blue2,N1),
-  R is Red1 +Red2,
-  AuxB is Blue1 + Blue2,
-  AuxR is R + 1,
-  Blue is AuxB,
-  Red is AuxR.
-get_number_void([L1|Tail],Red,Blue,N) :- 
-  nth0(0,L1,Piece),
-  Piece = ' ',
-  !,
-  get_right_elem(L1,Red1,Blue1),
-  N1 is N+1,
-  get_number_void(Tail,Red2,Blue2,N1),
-  AuxB is Blue1 + Blue2,
-  AuxR is Red1 + Red2,
-  Blue is AuxB,
-  Red is AuxR.
-get_number_void(_,Red,Blue,_) :-
-  Red is 0,
-  Blue is 0.
 
 %devolve verdade se o parâmetro for par
 even(X) :- 0 is mod(X, 2).

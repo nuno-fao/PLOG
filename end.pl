@@ -6,10 +6,8 @@ game_over(gameState(Board,unusedPieces(R0,B0,R1,B1),OutPieces,_),Winner) :-
   get_number_void(Board,Red,Blue),
   get_points(P1,P2,Red,Blue,OutPieces),
   get_winner(P1,P2,Red,Blue,OutPieces,Winner),
-  arg(2,OutPieces,Risk0),
-  arg(3,OutPieces,Risk1),
-  format("Player0 Points: ~p ~p ~p ~n",[P1,Red,Risk0]),
-  format("Player1 Points: ~p ~p ~p ~n",[P2,Blue,Risk1]).
+  format("Player0 Points: ~p ~p ~n",[P1,Red]),
+  format("Player1 Points: ~p ~p ~n",[P2,Blue]).
 game_over(_,Winner) :-
   Winner is -1.
 
@@ -82,3 +80,56 @@ get_right_elem(L1,Red,Blue) :-
   LastE = 'b',
   Red is 0,
   Blue is 1.
+
+get_number_void(Board,Red,Blue) :-
+  get_number_void(Board,Red,Blue,0).
+get_number_void([_|Tail],Red,Blue,N):-
+  N>3,
+  N<9,
+  even(N),
+  !,
+  N1 is N +1,
+  get_number_void(Tail,Red,Blue,N1).
+get_number_void([L1|Tail],Red,Blue,N) :- 
+  nth0(0,L1,Piece),
+  Piece = 'b',
+  !,
+  get_right_elem(L1,Red1,Blue1),
+  N1 is N+1,
+  get_number_void(Tail,Red2,Blue2,N1),
+  B is Blue1 + Blue2,
+  AuxB is B + 1,
+  AuxR is Red1 + Red2,
+  Blue is AuxB,
+  Red is AuxR.
+get_number_void([L1|Tail],Red,Blue,N) :- 
+  nth0(0,L1,Piece),
+  Piece = 'r',
+  !,
+  get_right_elem(L1,Red1,Blue1),
+  N1 is N+1,
+  get_number_void(Tail,Red2,Blue2,N1),
+  R is Red1 +Red2,
+  AuxB is Blue1 + Blue2,
+  AuxR is R + 1,
+  Blue is AuxB,
+  Red is AuxR.
+get_number_void([L1|Tail],Red,Blue,N) :- 
+  nth0(0,L1,Piece),
+  Piece = ' ',
+  !,
+  get_right_elem(L1,Red1,Blue1),
+  N1 is N+1,
+  get_number_void(Tail,Red2,Blue2,N1),
+  AuxB is Blue1 + Blue2,
+  AuxR is Red1 + Red2,
+  Blue is AuxB,
+  Red is AuxR.
+get_number_void(_,Red,Blue,_) :-
+  Red is 0,
+  Blue is 0.
+
+calcPoints(Board,OutPieces,OutPoints):-
+    get_number_void(Board,Red,Blue),
+    get_points(P1,P2,0,0,OutPieces),
+    OutPoints = [P1,P2].
