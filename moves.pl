@@ -109,7 +109,7 @@ move(gameState(Board,UnusedPieces,OutPieces,Player),target(Colour,X, Y, ColumnP,
     moveDownRight(Board4,Colour,ColumnP,LineP,Board5),
     moveDownLeft(Board5,Colour,ColumnP,LineP,Board6),
 
-    search_board(Board,OutPieces,NewBoard,NewOutPieces,0,0),
+    search_board(Board6,OutPieces,NewBoard,NewOutPieces,0,0),
 
     NewGameState =.. [gameState,Board6,UnusedPieces,OutPieces,Player],
     !.
@@ -480,35 +480,45 @@ getDownLeftPosition(XI,YI,XO,YO):-
     XO is XI - 1,
     YO is YI.
 
-iterate_line(Board,InitL,InitC,[X,Y,Colour]):-
-    print([InitL,InitC]),
-    nth0(InitL,Board,Linha),
-    nth0(InitC,Linha,Pos),
+
+iterate_col(Line,InitC,[X,Y,Colour]):-
+    nth0(InitC,Line,Pos),
     Pos \= ' ',
     !,
-    X = InitL,
     Y = InitC,
-    Colour = Pos,
-    print([X,Y,Colour]).
-
-iterate_line(Board,InitL,InitC,[X,Y,Colour]):-
-    nth0(InitL,Board,Linha),
-    nth0(InitC,Linha,Pos),
+    Colour = Pos.
+iterate_col(Line,InitC,[X,Y,Colour]):-
+    nth0(InitC,Line,Pos),
     C is InitC + 1,
     !,
-    iterate_line(Board,InitL,C,[X,Y,Colour]).
+    iterate_col(Line,C,[X,Y,Colour]).
+iterate_col(Line,InitC,[X,Y,Colour]):-
+    Y = 'X',
+    Colour = 'X'.
+
+iterate_line(Board,InitL,InitC,Out):-
+    InitL < 13,
+    nth0(InitL,Board,Line),
+    iterate_col(Line,InitC,[X,Y,Colour]),
+    Y \= 'X',
+    Out = [InitL,Y,Colour].
+iterate_line(Board,InitL,InitC,Out):-
+    InitL < 13,
+    L is InitL + 1,
+    iterate_line(Board,L,InitC,Out).
 
 iterate_line(Board,InitL,InitC,[X,Y,Colour]):-
-    nth0(InitL,Board,Linha),
-    !.
-iterate_line(Board,InitL,InitC,[X,Y,Colour]):-
-    nth0(InitL,Board,Linha),
-    nth0(InitC,Linha,Pos),
-    C is 0,
-    L is InitL +1,
-    iterate_line(Board,L,C,[X,Y,Colour]).
-
+    X = 'X',
+    Y = 'X',
+    Colour = 'X'.
 
 search_board(Board,OutPieces,NewBoard,NewOutPieces,InitL,InitC):-
-    iterate_line(Board,0,0,Out),
-    print(Out).
+    iterate_line(Board,InitL,InitC,Out),
+    [X,Y,Colour] = Out,
+    X \= 'X',
+    print(Out),
+    Y2 is Y + 1,
+    !,
+    search_board(Board,OutPieces,NewBoard,NewOutPieces,X,Y2).
+
+search_board(Board,OutPieces,NewBoard,NewOutPieces,InitL,InitC).
