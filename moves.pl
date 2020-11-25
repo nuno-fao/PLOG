@@ -49,9 +49,11 @@ move(gameState(Board,UnusedPieces,OutPieces,Player),target(Colour,X, Y, ColumnP,
     moveDownRight(Board4,Colour,ColumnP,LineP,Board5),
     moveDownLeft(Board5,Colour,ColumnP,LineP,Board6),
 
+    display_game(gameState(Board6,UnusedPieces,OutPieces,Player),Player),
+
     search_board(Board6,OutPieces,Board7,NewOutPieces,0,0),
 
-    NewGameState =.. [gameState,Board6,UnusedPieces,OutPieces,Player],
+    NewGameState =.. [gameState,Board7,UnusedPieces,NewOutPieces,Player],
     !.
 
 replace_nth0(List, Index, OldElem, NewElem, NewList) :-
@@ -458,69 +460,105 @@ iterate_line(Board,InitL,InitC,[X,Y,Colour]):-
 getColour(Board,X,Y,Colour):-
     nth0(X,Board,Line),
     nth0(Y,Line,C),
-    Colour = C,
-    !.
+    !,
+    Colour = C.
+
 getColour(Board,X,Y,Colour):-
     Colour = ' '.
 
-search_near(Board,X,Y,Colour,OutList,ListP):-
+search_near(Board,X,Y,Colour):-
+    assert(processed([X,Y])),
+    assert(sequence(X,Y,Colour)),
     ext_to_int(C,L,Y,X),
-    print('\n externo '),
-    print([C,L]),
     getUpPosition(C,L,UPC,UPL),
-    add_to_list(Board,UPC,UPL,Colour,ListaP,LU),
+    add_to_list(Board,UPC,UPL,Colour),
     getDownPosition(C,L,DC,DL),
-    add_to_list(Board,DC,DL,Colour,ListaP,LD),
+    add_to_list(Board,DC,DL,Colour),
     getUpLeftPosition(C,L,ULC,ULL),
-    add_to_list(Board,ULC,ULL,Colour,ListaP,LUL),
+    add_to_list(Board,ULC,ULL,Colour),
     getUpRightPosition(C,L,URC,URL),
-    add_to_list(Board,URC,URL,Colour,ListaP,LUR),
+    add_to_list(Board,URC,URL,Colour),
     getDownRightPosition(C,L,DRC,DRL),
-    add_to_list(Board,DRC,DRL,Colour,ListaP,LDR),
+    add_to_list(Board,DRC,DRL,Colour),
     getDownLeftPosition(C,L,DLC,DLL),
-    add_to_list(Board,DLC,DLL,Colour,ListaP,LDL),
-    %append(LU,LD,NewListaP),
-    print('\n Nova Search'),
-    print(LU),
-    print('\n'),
-    print(LD),
-    print('\n'),
-    print(LUL),
-    print('\n'),
-    print(LUR),
-    print('\n'),
-    print(LDR),
-    print('\n'),
-    print(LDL),
-    print('\n'),
-    print(' Ended Search \n').
+    add_to_list(Board,DLC,DLL,Colour).
 
 
-add_to_list(Board,C,L,Colour,ListaP,ListaOut):-
+add_to_list(Board,C,L,Colour):-
     verifyInBoard(C,L),
     ext_to_int(C,L,Y,X),
-    print(ListaP),
-    member([X,Y],ListaP),
-    append([[X,Y]],ListaP,NewListaP),
-    getColour(Board,X,Y,C),
-    C = Colour,
-    search_near(Board,X,Y,Colour,NewListaOut,NewListaP),
-    ListaOut = [[X,Y]|NewListaOut],
-    print(ListaOut).
+    \+retract(processed([X,Y])),
+    assert(processed([X,Y])),
+    getColour(Board,X,Y,NewColour),
+    NewColour = Colour,
+    search_near(Board,X,Y,Colour).
 
-add_to_list(_,_,_,_,_,ListaOut):-
-    ListaOut = [].
+add_to_list(_,_,_,_).
+
+
 
 search_board(Board,OutPieces,NewBoard,NewOutPieces,InitL,InitC):-
     iterate_line(Board,InitL,InitC,Out),
-    print(Out),
     [X,Y,Colour] = Out,
     X \= 'X',
     Y2 is Y + 1,
     !,
-    print([X,Y]),
-    search_near(Board,X,Y,Colour,OutList,[]),
-    search_board(Board,OutPieces,NewBoard,NewOutPieces,X,Y2).
+    retractall(sequence(_,_,_)),
+    retractall(processed(_)),
+    assert(sequence(0,0,0)),
+    search_near(Board,X,Y,Colour),
+    retract(sequence(0,0,0)),
+    setof([III,VVV,CCC],sequence(III,VVV,CCC),Bolacha),
+    removePieces(Board,OutPieces,Bolacha,NewBoardA,NewOPieces),
+    search_board(NewBoardA,NewOPieces,NewBoard,NewOutPieces,X,Y2).
 
 search_board(Board,OutPieces,NewBoard,NewOutPieces,InitL,InitC):-
-    NewBoard = Board.
+    NewBoard = Board,
+    NewOutPieces = OutPieces.
+
+removePieces(Board,OutPieces,Bolacha,NewBoard,NewOutPieces):-
+    length(Bolacha,Tam),
+    Tam > 3,
+    print('Removing Whiskas saquetas!\n'),
+    read(_),
+    removeFromList(Board,OutPieces,NewBoard,Bolacha,NewOutPieces).
+removePieces(Board,OutPieces,Bolacha,NewBoard,NewOutPieces):-
+    NewBoard = Board,
+    NewOutPieces = OutPieces.
+
+removeFromList(Board,OutPieces,NewBoard,[[X,Y,Colour]|T],NewOutPieces):-
+    nth0(X,Board,Linha),
+    replace_nth0(Linha,Y,Colour,' ',NewLinha),
+    replace_nth0(Board,X,Linha,NewLinha,NewBoardA),
+
+    updatePieces(OutPieces,NewOPieces,X,Y,Colour),
+
+    removeFromList(NewBoardA,NewOPieces,NewBoard,T,NewOutPieces).
+removeFromList(Board,OutPieces,NewBoard,_,NewOutPieces):-
+    NewBoard = Board,
+    NewOutPieces = OutPieces.
+
+updatePieces(outPieces(RedPointPiece,BluePointPiece,VoidPieces1,VoidPieces2),NewOutPieces,X,Y,Colour):-
+    Colour = 'r',
+    print([X,Y]),
+    ext_to_int(C,L,Y,X),
+    verifyNotInVoid(C,L),
+    Out is RedPointPiece +1,
+	NewOutPieces =.. [outPieces,Out,BluePointPiece,VoidPieces1,VoidPieces2].
+
+updatePieces(outPieces(RedPointPiece,BluePointPiece,VoidPieces1,VoidPieces2),NewOutPieces,X,Y,Colour):-
+    Colour = 'r',
+    Out is VoidPieces1 +1,   
+	NewOutPieces =.. [outPieces,RedPointPiece,BluePointPiece,Out,VoidPieces2].
+
+updatePieces(outPieces(RedPointPiece,BluePointPiece,VoidPieces1,VoidPieces2),NewOutPieces,X,Y,Colour):-
+    Colour = 'b',
+    ext_to_int(C,L,Y,X),
+    verifyNotInVoid(C,L),
+    Out is BluePointPiece +1,    
+	NewOutPieces =.. [outPieces,RedPointPiece,Out,VoidPieces1,VoidPieces2].
+
+updatePieces(outPieces(RedPointPiece,BluePointPiece,VoidPieces1,VoidPieces2),NewOutPieces,X,Y,Colour):-
+    Colour = 'b',
+    Out is VoidPieces2 +1,    
+	NewOutPieces =.. [outPieces,RedPointPiece,BluePointPiece,VoidPieces1,Out].
