@@ -94,7 +94,8 @@ verifyInBoard(Col,Line):-
 
 change_to_internal(Col,Line,NewCol,NewLine) :-
     get_col(Line,Col,NewCol),
-    get_line(Line,Col,NewLine).
+    get_line(Line,Col,NewLine),
+    print([Col,Line,NewCol,NewLine]).
 
 move(gameState(Board,UnusedPieces,OutPieces,Player),target(Colour,X, Y, ColumnP, LineP),NewGameState):-
     nth0(X,Board,Linha),

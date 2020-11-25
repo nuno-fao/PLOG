@@ -44,6 +44,7 @@ loop(GameState,Winner) :-
   read(Column1),
   format("Which Line to put It: ",[]),
   read(Line1),
+  change_to_internal(Column1,Line1,A,B),
   verifyNotInVoid(Column1, Line1),
   change_to_internal(Column1, Line1, Line, Column),
   format("~p ~p~n",[Line,Column]),
