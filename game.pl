@@ -22,7 +22,7 @@ board([
             [' '] 
 ]).
 %unused_pieces(-UnusedPieces)
-unused_pieces([10,5,0,10]).
+unused_pieces([10,5,5,10]).
 %out_pieces(-OutPieces)
 out_pieces([0,0,0,0]).
 %player(-Player)
