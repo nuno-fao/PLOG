@@ -2,18 +2,20 @@ valid_moves(gameState(Board,_,_,_),_,ListOfMoves):-
     check_line(Board,0,ListOfMoves).
 
 
+
 %posição vazia -> válida -> adicionar à lista
 check_pos(Line,P,[H|T],List) :-
     H = ' ',
+    ext_to_int(Col,Ind,P,Line),
+    verifyNotInVoid(Col,Ind),
     P1 is P + 1,
     !,
     check_pos(Line,P1,T,List1),
     Pos =.. [pos,Line,P],
     append([Pos],List1,List).
     
-%não vazio -> segue em frente
-check_pos(Line,P,[H|T],List) :-
-    H \= ' ',
+%não vazia ou void -> segue em frente
+check_pos(Line,P,[_H|T],List) :-
     P1 is P + 1,
     !,
     check_pos(Line,P1,T,List).

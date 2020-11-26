@@ -52,8 +52,8 @@ loop(GameState,Winner) :-
   move(GameState,Target,NewGameState),
 	get_player(NewGameState,Player),
   
-  %valid_moves(NewGameState,Player,ListOfMoves),
-  %format("~p~n",[ListOfMoves]),
+  valid_moves(NewGameState,Player,ListOfMoves),
+  format("~p~n",[ListOfMoves]),
   arg(3,GameState,OutPieces),
   arg(1,GameState,Board),
   calcPoints(Board,OutPieces,[P1,P2]),
