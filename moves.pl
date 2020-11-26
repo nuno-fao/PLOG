@@ -1,17 +1,17 @@
 valid_moves(gameState(Board,UnusedPieces,_,_),Player,ListOfMoves):-
     check_line(Board,0,ValidPosList),
-    checkForRed(UnusedPieces,ValidPosList,RedMoveList),
-    checkForBlue(UnusedPieces,ValidPosList,BlueMoveList),
+    checkForRed(UnusedPieces,Player,ValidPosList,RedMoveList),
+    checkForBlue(UnusedPieces,Player,ValidPosList,BlueMoveList),
     append(RedMoveList,BlueMoveList,ListOfMoves).
 
-checkForRed(UnusedPieces,Valid,Altered):-
+checkForRed(UnusedPieces,Player,Valid,Altered):-
     verifyAvailablePiece(UnusedPieces,Player,'r'), !,
     map(Valid,addColorToPos,'r',Altered).
-checkForRed(UnusedPieces,Valid,[]).
-checkForBlue(UnusedPieces,Valid,Altered):-
+checkForRed(_UnusedPieces,_Player,_Valid,[]).
+checkForBlue(UnusedPieces,Player,Valid,Altered):-
     verifyAvailablePiece(UnusedPieces,Player,'b'), !,
     map(Valid,addColorToPos,'b',Altered).
-checkForBlue(UnusedPieces,Valid,[]).
+checkForBlue(_UnusedPieces,_Player,_Valid,[]).
 
 map([], _, _, []).
 map([X | List1], Transf, Colour, [Y | List2]) :-

@@ -22,7 +22,7 @@ board([
             [' '] 
 ]).
 %unused_pieces(-UnusedPieces)
-unused_pieces([10,5,5,10]).
+unused_pieces([10,5,0,10]).
 %out_pieces(-OutPieces)
 out_pieces([0,0,0,0]).
 %player(-Player)
@@ -51,7 +51,6 @@ loop(GameState,Winner) :-
   Target =.. [target,Read,Column,Line,Column1,Line1],
   move(GameState,Target,NewGameState),
 	get_player(NewGameState,Player),
-  
   valid_moves(NewGameState,Player,ListOfMoves),
   format("~p~n",[ListOfMoves]),
   arg(3,GameState,OutPieces),
