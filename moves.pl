@@ -1,5 +1,25 @@
-valid_moves(gameState(Board,_,_,_),_,ListOfMoves):-
-    check_line(Board,0,ListOfMoves).
+valid_moves(gameState(Board,UnusedPieces,_,_),Player,ListOfMoves):-
+    check_line(Board,0,ValidPosList),
+    checkForRed(UnusedPieces,ValidPosList,RedMoveList),
+    checkForBlue(UnusedPieces,ValidPosList,BlueMoveList),
+    append(RedMoveList,BlueMoveList,ListOfMoves).
+
+checkForRed(UnusedPieces,Valid,Altered):-
+    verifyAvailablePiece(UnusedPieces,Player,'r'), !,
+    map(Valid,addColorToPos,'r',Altered).
+checkForRed(UnusedPieces,Valid,[]).
+checkForBlue(UnusedPieces,Valid,Altered):-
+    verifyAvailablePiece(UnusedPieces,Player,'b'), !,
+    map(Valid,addColorToPos,'b',Altered).
+checkForBlue(UnusedPieces,Valid,[]).
+
+map([], _, _, []).
+map([X | List1], Transf, Colour, [Y | List2]) :-
+    Func =.. [Transf, X, Colour, Y],
+    Func,
+    map(List1, Transf, Colour, List2).
+addColorToPos(Move,Colour,MoveWithColor):-
+    MoveWithColor = [Colour|Move].
 
 %posição vazia -> válida -> adicionar à lista
 check_pos(Line,P,[H|T],List) :-
@@ -9,7 +29,7 @@ check_pos(Line,P,[H|T],List) :-
     P1 is P + 1,
     !,
     check_pos(Line,P1,T,List1),
-    Pos =.. [pos,Line,P],
+    Pos = [Line,P],
     append([Pos],List1,List).
     
 %não vazia ou void -> segue em frente
