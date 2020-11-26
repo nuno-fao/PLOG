@@ -21,8 +21,6 @@ map([X | List1], Transf, Colour, [Y | List2]) :-
 addColorToPos(Move,Colour,MoveWithColor):-
     MoveWithColor = [Colour|Move].
 
-
-
 %posição vazia -> válida -> adicionar à lista
 check_pos(Line,P,[H|T],List) :-
     H = ' ',
