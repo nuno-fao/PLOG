@@ -3,7 +3,7 @@
 :- consult('end.pl').
 :- consult('moves.pl').
 :- consult('board_map.pl').
-
+:- consult('AI.pl').
 %devolve o Board inicial
 %board(-Board)
 board([

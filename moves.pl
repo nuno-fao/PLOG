@@ -1,8 +1,6 @@
 valid_moves(gameState(Board,_,_,_),_,ListOfMoves):-
     check_line(Board,0,ListOfMoves).
 
-
-
 %posição vazia -> válida -> adicionar à lista
 check_pos(Line,P,[H|T],List) :-
     H = ' ',
