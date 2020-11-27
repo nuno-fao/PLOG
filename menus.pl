@@ -11,10 +11,12 @@ manageGamemode(1):-
     assert(controller(1,'P')).
 manageGamemode(2):-
     assert(controller(0,'P')),
-    assert(controller(1,'P')).
+    assert(controller(1,'AI')),
+    difficultyMenu.
 manageGamemode(3):-
-    assert(controller(0,'P')),
-    assert(controller(1,'P')).
+    assert(controller(0,'AI')),
+    assert(controller(1,'AI')),
+    difficultyMenu.
 manageGamemode(0) :-
     assert(controller(0,'E')),
     assert(controller(1,'E')),
@@ -49,25 +51,29 @@ printMainMenu :-
 
 difficultyMenu :-
     printDifficulty,
+    retract(difficulty(Difficulty)),
     write('Insert your option: '),
-    read(Input),
-    manageDifficulty(Input).
+    read(InputD),
+    manageDifficulty(InputD).
 
 printDifficulty :-
     nl,
     write(' _______________________________________________________________________ '),nl,
     write('|                                                                       |'),nl,
-    write('|                        What difficulty do you want?                   |'),nl,
+    write('|                  What difficulty do you want for the AI?              |'),nl,
     write('|                                                                       |'),nl,
     write('|                                1. Easy                                |'),nl,
     write('|                                                                       |'),nl,
 	write('|                                2. Hard                                |'),nl,
     write('|                                                                       |'),nl,
-    write('|                               0. Go Back                              |'),nl,
-    write('|                                                                       |'),nl,
     write(' _______________________________________________________________________ '),nl,nl.
 
-%manageDifficulty(1):-
-%manageDifficulty(2):-
-%manageDifficulty(0):-
-%manageDifficulty(_):-
+manageDifficulty(1):-
+    assert(difficulty(easy)).
+manageDifficulty(2):-
+    assert(difficulty(hard)).
+manageDifficulty(_):-
+    (\+ number(Number); Number<1 ; Number>2),
+     write('Invalid option!\n\n'), 
+    read(Input),
+    manageDifficulty(Input).

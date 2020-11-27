@@ -83,8 +83,11 @@ move(gameState(Board,UnusedPieces,OutPieces,Player),target(Colour,X, Y, ColumnP,
 
     verifyAvailablePiece(UnusedPieces,Player,Colour),
     nth0(X,Board,Linha),
+    
     replace_nth0(Linha,Y,' ',Colour,NewLinha),
+    
     replace_nth0(Board,X,Linha,NewLinha,NewBoard),
+    
 
     removeFromUnused(UnusedPieces,Player,Colour,NewUnusedPieces),
 

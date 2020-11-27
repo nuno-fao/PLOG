@@ -5,6 +5,7 @@
 :- consult('board_map.pl').
 :- consult('menus.pl').
 :- dynamic controller/2.
+:- dynamic difficulty/1.
 %:- consult('AI.pl').
 %devolve o Board inicial
 %board(-Board)
@@ -32,6 +33,7 @@ player(0).
 
 controller(0,'undefined').
 controller(1,'undefined').
+difficulty('undefined').
 
 %inicia o jogo e o estado de jogo mostrando depois o tabuleiro
 play :-
@@ -55,11 +57,19 @@ loop(GameState,Winner) :-
   Target =.. [target,Colour,Column,Line,Column1,Line1],
   move(GameState,Target,NewGameState),
 	get_player(NewGameState,Player),
-  valid_moves(NewGameState,Player,ListOfMoves),
+  %valid_moves(NewGameState,Player,ListOfMoves),
   display_game(NewGameState,Player),
   game_over(NewGameState,Winner1),
+  %ai(NewGameState,AA),
+  %retract(moves(AA,[MColour,MX,MY])),
+  %ext_to_int(CP,CL,MY,MX),
+  %MTarget =.. [target,MColour,MX,MY,CP,CL],
+  %move(NewGameState,MTarget,MGameState),
+	%get_player(MGameState,Player),
+  %display_game(MGameState,Player),
+  %game_over(MGameState,Winner1),
   !,
-  loop(NewGameState,Winner1).
+  loop(MGameState,Winner1).
 
 loop(GameState,Winner) :-
   Winner = -1,
