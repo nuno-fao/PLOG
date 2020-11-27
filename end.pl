@@ -125,11 +125,11 @@ get_number_void([L1|Tail],Red,Blue,N) :-
   AuxR is Red1 + Red2,
   Blue is AuxB,
   Red is AuxR.
-get_number_void(_,Red,Blue,_) :-
+get_number_void(_,Red,Blue,_):-
   Red is 0,
   Blue is 0.
 
 calcPoints(gameState(Board,_,OutPieces,_),OutPoints):-
     get_number_void(Board,Red,Blue),
-    get_points(P1,P2,0,0,OutPieces),
+    get_points(P1,P2,Red,Blue,OutPieces),
     OutPoints = [P1,P2].

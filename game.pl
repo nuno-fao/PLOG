@@ -50,19 +50,16 @@ loop(GameState,Winner) :-
   %format("~p ~p~n",[Line,Column]),
   Target =.. [target,Read,Column,Line,Column1,Line1],
   move(GameState,Target,NewGameState),
-	get_player(NewGameState,Player),
-  valid_moves(NewGameState,Player,ListOfMoves),
-  format("~p~n",[ListOfMoves]),
-  calcPoints(GameState,[P1,P2]),
-  print([P1,P2]),
-  minimax(GameState, BestPos, Val, NodesList,4),
-  print('\n'),
-  print([BestPos,Val,NodesList]),
-  print('\n'),
-  display_game(NewGameState,Player),
-  game_over(NewGameState,Winner1),
+  ai(NewGameState,AA),
+  retract(moves(AA,[MColour,MX,MY])),
+  ext_to_int(CP,CL,MY,MX),
+  MTarget =.. [target,MColour,MX,MY,CP,CL],
+  move(NewGameState,MTarget,MGameState),
+	get_player(MGameState,Player),
+  display_game(MGameState,Player),
+  game_over(MGameState,Winner1),
   !,
-  loop(NewGameState,Winner1).
+  loop(MGameState,Winner1).
 
 loop(GameState,Winner) :-
   Winner = -1,
