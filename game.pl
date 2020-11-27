@@ -3,7 +3,9 @@
 :- consult('end.pl').
 :- consult('moves.pl').
 :- consult('board_map.pl').
-:- consult('AI.pl').
+:- consult('menus.pl').
+:- dynamic controller/2.
+%:- consult('AI.pl').
 %devolve o Board inicial
 %board(-Board)
 board([
@@ -22,43 +24,38 @@ board([
             [' '] 
 ]).
 %unused_pieces(-UnusedPieces)
-unused_pieces([10,5,5,10]).
+unused_pieces([1,0,0,1]).
 %out_pieces(-OutPieces)
 out_pieces([0,0,0,0]).
 %player(-Player)
 player(0).
 
+controller(0,'undefined').
+controller(1,'undefined').
+
 %inicia o jogo e o estado de jogo mostrando depois o tabuleiro
 play :-
 	initial(GameState),
+  mainMenu,
+  check_exit,
 	get_player(GameState,Player),
 	display_game(GameState,Player),
   format("~n~n",[]),
-  loop(GameState).
+  loop(GameState,-1),
+  play.
+play.
 
 loop(GameState,Winner) :-
   Winner = -1,
-  format("Which piece to Use(r or b): ",[]),
-  read(Read),
-  (Read = 'r';Read = 'b'),
-  format("Which Column to put It: ",[]),
-  read(Column1),
-  format("Which Line to put It: ",[]),
-  read(Line1),
+	get_player(GameState,PlayerInit),
+  controller(PlayerInit,Controller),
+  getMoveFromController(Controller,Colour,Column1,Line1),
   verifyNotInVoid(Column1, Line1),
   ext_to_int(Column1, Line1, Line, Column),
-  %format("~p ~p~n",[Line,Column]),
-  Target =.. [target,Read,Column,Line,Column1,Line1],
+  Target =.. [target,Colour,Column,Line,Column1,Line1],
   move(GameState,Target,NewGameState),
 	get_player(NewGameState,Player),
   valid_moves(NewGameState,Player,ListOfMoves),
-  format("~p~n",[ListOfMoves]),
-  calcPoints(GameState,[P1,P2]),
-  print([P1,P2]),
-  minimax(GameState, BestPos, Val, NodesList,4),
-  print('\n'),
-  print([BestPos,Val,NodesList]),
-  print('\n'),
   display_game(NewGameState,Player),
   game_over(NewGameState,Winner1),
   !,
@@ -71,12 +68,8 @@ loop(GameState,Winner) :-
   !,
   loop(GameState,Winner).
 
-
-
 loop(_,Winner) :-
   format("Winner: ~p~n",[Winner]).
-loop(GameState) :-
-  loop(GameState,-1).
 
 %inicializar o GameState com uma lista de listas com informação do estado de jogo inicial
 %initial(-GameState)
@@ -97,4 +90,28 @@ get_player(gameState(_,_,_,Player),Player).
 even(X) :- 0 is mod(X, 2).
 %devolve verdade se o parâmetro for ímpar
 odd(X) :- 1 is mod(X, 2).
-    
+
+askForMove(Colour,Column,Line):-
+  format("Which piece to Use(r or b): ",[]),
+  read(Read),
+  (Read == 'r';Read == 'b'),
+  format("Which Column to put It: ",[]),
+  read(ColumnAux), number(ColumnAux),
+  format("Which Line to put It: ",[]),
+  read(LineAux), number(LineAux), !,
+  Colour = Read,
+  Column = ColumnAux,
+  Line = LineAux.
+
+  check_exit:-
+    controller(0,Controller0),
+    controller(1,Controller1),
+    Controller0 \= 'E',
+    Controller1 \= 'E'.
+
+
+getMoveFromController('P',Colour,Column1,Line1):-
+  !,
+  askForMove(Colour,Column1,Line1).
+
+getMoveFromController('AI',Colour,Column1,Line1). %é preciso fazer
