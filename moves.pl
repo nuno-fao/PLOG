@@ -91,7 +91,6 @@ move(gameState(Board,UnusedPieces,OutPieces,Player),target(Colour,X, Y, ColumnP,
 
     removeFromUnused(UnusedPieces,Player,Colour,NewUnusedPieces),
 
-    write('CARALho'),
     %format("Point: ~p ~p ~n",[ColumnP,LineP]),
     moveDir(NewBoard,checkUp,getUpPosition,getDownPosition,Colour,ColumnP,LineP,Board1),
     moveDir(Board1,checkUpRight,getUpRightPosition,getDownLeftPosition,Colour,ColumnP,LineP,Board2),
@@ -99,7 +98,6 @@ move(gameState(Board,UnusedPieces,OutPieces,Player),target(Colour,X, Y, ColumnP,
     moveDir(Board3,checkDown,getDownPosition,getUpPosition,Colour,ColumnP,LineP,Board4),
     moveDir(Board4,checkDownLeft,getDownLeftPosition,getUpRightPosition,Colour,ColumnP,LineP,Board5),
     moveDir(Board5,checkDownRight,getDownRightPosition,getUpLeftPosition,Colour,ColumnP,LineP,Board6),
-
     %display_game(gameState(Board6,UnusedPieces,OutPieces,Player),Player),
 
     search_board(Board6,OutPieces,Board7,NewOutPieces,0,0),
@@ -131,48 +129,31 @@ movePiece(Board,Color,XI,YI,XF,YF,NewBoard) :-
 
 
 %Move a primeira peça acima
-moveDir(Board, checkDirFunc, getDirPosFunc, getOposDirFunc, Color, XI, YI, NewBoard):-
-print('Yo1'),
-    GetDir =.. [getDirPosFunc,XI,YI,XT,YT], GetDir, %obter posição imediatamente acima para começar a verificar
-    CheckDir =.. [checkDirFunc,Board,XT,YT,ColumnO,LineO,PieceO], CheckDir,  %obter peça mais próxima, se não encontrar muda de instanciação
-    %checkUp(Board,XT,YT,ColumnO,LineO,PieceO),     
-    %format("UP: ~p ~p ~p ~n",[ColumnO,LineO,PieceO]),      
-    applyMoveDir(Board,checkDirFunc, getDirPosFunc, getOposDirFunc,Color,XI,YI,ColumnO,LineO,PieceO,NewBoard),   %peça encontrada agora falta movê-la
-    print('Yo2'),
+moveDir(Board, CheckDirFunc, GetDirPosFunc, GetOposDirFunc, Color, XI, YI, NewBoard):-
+    GetDir =.. [GetDirPosFunc,XI,YI,XT,YT], GetDir, %obter posição imediatamente a seguir na direção pretendida para começar a verificar
+    CheckDir =.. [CheckDirFunc,Board,XT,YT,ColumnO,LineO,PieceO], CheckDir,  %obter peça mais próxima, se não encontrar muda de instanciação
+    applyMoveDir(Board, CheckDirFunc, GetDirPosFunc, GetOposDirFunc, Color,XI,YI,ColumnO,LineO,PieceO,NewBoard),   %peça encontrada agora falta movê-la
     !.
 moveDir(Board,_,_,_,_,_,_,NewBoard):-
     NewBoard = Board.   %nada acontece, copia board e segue jogo
-    %format("UP: NADA~n",[]).
-applyMoveDir(Board,checkDirFunc, getDirPosFunc, getOposDirFunc,Color,XColocado,YColocado,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):-
-print('Yo3'),
+applyMoveDir(Board,CheckDirFunc, GetDirPosFunc, GetOposDirFunc,Color,XColocado,YColocado,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):-
     Color \= ColorEncontrada, !,    %quando as peças são de cor diferente
-    GetDir =.. [getDirPosFunc,XColocado,YColocado,XT,YT], GetDir,
-    %getUpPosition(XColocado,YColocado,XT,YT),       %obtem posição imediatamente acima da que foi colocada
-    print('Yo4'),
+    GetDir =.. [GetDirPosFunc,XColocado,YColocado,XT,YT], GetDir, %obtem posição imediatamente a seguir na direção da que foi colocada
     movePiece(Board,ColorEncontrada,XEncontrado,YEncontrado,XT,YT,NewBoard).        %move a peça para a posição obtida no predicado em cima
-applyMoveDir(Board,checkDirFunc, getDirPosFunc, getOposDirFunc,Color,_,_,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):-
-print('Yo5'),
+applyMoveDir(Board,CheckDirFunc, GetDirPosFunc, GetOposDirFunc,Color,_,_,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):-
     Color = ColorEncontrada,    %quando as peças são de cor igual
-    GetDir =.. [getDirPosFunc,XColocado,YColocado,XT,YT], GetDir,
-    %getUpPosition(XEncontrado,YEncontrado,XT,YT),   %obtem posição imediatamente acima da peça encontrada
-    CheckDir =.. [checkDirFunc,Board,XT,YT,ColumnO,LineO,_], CheckDir,
-    %checkUp(Board,XT,YT,ColumnO,LineO,_),   %procura outra peça acima desta para colidir, se não houver passa à seguinte instanciação
-    GetOposDir =.. [getOposDirFunc,ColumnO,LineO,TargetX,TargetY], GetOposDir,
-    %getDownPosition(ColumnO,LineO,TargetX,TargetY),     %obtem posição abaixo da nova encontrada, que é para lá onde se vai mover a primeira peça encontrada
-    movePiece(Board,ColorEncontrada,XEncontrado,YEncontrado,TargetX,TargetY,NewBoard),  %mover a peça
-    print('Yo6'),
-    !.
-applyMoveDir(Board,checkDirFunc, getDirPosFunc, getOposDirFunc,_,XColocado,YColocado,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):- 
-print('Yo7'),
-    getVoidDir(getDirPosFunc,XColocado,YColocado,XT,YT),   %obtem a célula void encontrada na direção Up
-    print('Yo8'),
+    GetDir =.. [GetDirPosFunc,XEncontrado,YEncontrado,XT,YT], GetDir, %obtem posição imediatamente imediatamente a seguir da peça encontrada na direção pretendida 
+    CheckDir =.. [CheckDirFunc,Board,XT,YT,ColumnO,LineO,_], CheckDir, !, %procura outra peça na mesma direção para colidir, se não houver passa à seguinte instanciação
+    GetOposDir =.. [GetOposDirFunc,ColumnO,LineO,TargetX,TargetY], GetOposDir,  %obtem posição anterior à encontrada, que é para lá onde se vai mover a peça inicialmente encontrada
+    movePiece(Board,ColorEncontrada,XEncontrado,YEncontrado,TargetX,TargetY,NewBoard). %mover a peça
+applyMoveDir(Board,CheckDirFunc, GetDirPosFunc, GetOposDirFunc,_,XColocado,YColocado,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):- 
+    getVoidDir(GetDirPosFunc,XColocado,YColocado,XT,YT),   %obtem a célula void encontrada na direção pretendida
     movePiece(Board,ColorEncontrada,XEncontrado,YEncontrado,XT,YT,NewBoard).    %move a peça para a zona void encontrada
-getVoidDir(getDirPosFunc,XI,YI,XV,YV):-    %obtem a célula void encontrada na direção Up
-    verifyNotInVoid(XI,YI), %ainda não chegou ao void
-    !,
-    GetDir =.. [getDirPosFunc,XI,YI,X1,Y1], GetDir,
-    getVoidDir(getDirPosFunc,X1,Y1,XV,YV).
-getVoidDir(getDirPosFunc,XI,YI,XV,YV):-    %chegou ao void
+getVoidDir(GetDirPosFunc,XI,YI,XV,YV):-    %obtem a célula void encontrada na direção pretendida
+    verifyNotInVoid(XI,YI), !, %ainda não chegou ao void
+    GetDir =.. [GetDirPosFunc,XI,YI,X1,Y1], GetDir,
+    getVoidDir(GetDirPosFunc,X1,Y1,XV,YV).
+getVoidDir(GetDirPosFunc,XI,YI,XV,YV):-    %chegou ao void
     XV = XI,
     YV = YI.
 
