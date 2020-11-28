@@ -48,6 +48,8 @@ Rulebook: https://nestorgames.com/rulebooks/GAUSS_EN.pdf
 
 - O estado de jogo a cada instante é constituído pelo tabuleiro, as peças por jogar, as peças na zona de bónus e risco de cada jogador e finalmente de quem é a vez de colocar uma peça no tabuleiro.
 
+- A dificuldade é obtida com o predicado difficulty que inicialmente tem um valor que não é util mas que é atualizado pelo predicado de escolha de dificuldade. O controlador de cada player (humano ou AI) é utilizado de forma semelhante à diculdade, tendo inicialmente um valor inutil para depois ser atualizado pelo menu de escolha de modo de jogo. Desta maneira podemos usar o mesmo loop para os vários modos de jogo e dificuldades.
+
 - Internamente no tabuleiro ' ', 'r' e 'b' representam vazio, peça vermelha e peça azul, respetivamente. 
 
 -  O tabuleiro, peças por jogar e peças na zonas de  recolha serão iniciados assim: 
@@ -74,9 +76,23 @@ O output deste predicado num estado inicial, intermédio e final seria respetiva
 >![output final](./img/output_final.png)
 
 ### Lista de Jogadas Válidas
-A listagem das jogadas válidas é obtida usando o predicado valid_moves(+GameState, +Player, -ListOfMoves). Este predicado através de um predicado ao auxiliar check_line([H|T], Row, List) que irá percorrer todas as linhas to tabuleiro e que por sua recorre ao predicado check_pos(Line,P,[H|T],List) para pesquisar cada coluna por uma célula vazia para a adicionar à lista de output.
+A listagem das jogadas válidas é obtida usando o predicado valid_moves(+GameState, +Player, -ListOfMoves) recebendo um GameState e o Player para o qual deve listar as jogadas válidas unificando-as com ListOfMoves. Recorrendo um predicado ao auxiliar check_line([H|T], Row, List) que recursivamente percorre todas as células do board vai-se obter em List todas as células do tabuleiro que estão desocupadas nem estão numa zona void. De seguida, com a lista obtida vai-se criar outras duas que contêm as mesmas jogadas mas com as cores das peças adicionadas se tiverem disponiveis. Se uma cor não estiver disponível os predicados checkForRed/4 e checkForBlue/4 constroem uma lista vazia. No fim o ListOfMoves será o append das duas listas obtidas.
  
 ### Execução de Jogadas
+A uma jogada é validade e executada maioritariamente pelo predicado move(+GameState,+Move,-NewGameState) mas depende de várias coisas até isso acontecer. Primeiramente, no loop principal é identificado o controlador do jogador que tem a vez. Se for humano, pede a cor, coluna e linhas em que o jogador deseja colocar a peça, fazendo uma verificação muito básica do que recebe. Se não for humano obtem a jogada como é explicado na seccção "Jogada do Computador". 
+
+Obtida a jogada, esta é passada ao predicado move, juntamente com o GameState para que este a valide e execute. Primeiramente, verifica se o jogador em questão ainda tem peças da cor que pretende jogar recorrendo ao predicado verifyAvailablePiece(UnusedPieces,Player,Colour). Se tal se confirmar, testa se a célula escolhida está realmente vazia, coloca lá a peça, devolve um board atualizado e utilizando removeFromUnused(UnusedPieces,Player,Colour,NewUnusedPieces) recebe um UnusedPieces atualizado. 
+
+De seguida é preciso pesquisar em cada uma das 6 direções por uma peça para a repelir ou atrair consoante a cor. Isto é feito recorrendo ao predicado moveDir(Board, GetDirPosFunc, GetOposDirFunc, Color, XI, YI, NewBoard) que precisa de receber muitos elementos para que sejam chamados os predicados auxiliares corretos:
+ - Board - tabuleiro a pesquisar
+ - GetDirPosFunc - o nome do predicado que, a partir de uma posição, obtém a próxima posição na direção desejada
+ - GetOposDirFunc - o nome do predicado que, a partir de uma posição, obtém a próxima posição na direção oposta à desejada
+ - Color - cor da peça colocada pelo jogador
+ - XI e YI -  coordenadas da célula onde foi colocada a peça
+ - NewBoard que vai conter o tabuleiro resultante
+
+
+
 Primeiramente para que um jogador introduza uma jogada ser-lhe-á pedido à vez a cor da peça, a coluna e a linha da coluna, a contar de cima, em que pretende efetuar a jogada. Se por vários motivos a jogada especificada não for válida (tentar colocar no void, num espaço não vazio, etc) irá receber uma confirmação visual disso e terá que especificar outra jogada. Se tudo se confirmar o predicado move(+GameState,+Move,-NewGameState) é responsável por efetivamente colocar a peça no tabuleiro e tratar das mudanças todas necessárias ao mesmo. Assim vai percorrer o tabuleiro em cada uma das seis direções a partir da nova peça no tabuleiro até encontrar uma peça e atraí-la ou afastá-la da peça colocada. 
 
 ### Final do Jogo
