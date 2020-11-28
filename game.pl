@@ -52,7 +52,6 @@ loop(GameState,Winner) :-
 	get_player(GameState,PlayerInit),
   controller(PlayerInit,Controller),
   getMoveFromController(Controller,Colour,Column1,Line1),
-  verifyNotInVoid(Column1, Line1),
   ext_to_int(Column1, Line1, Line, Column),
   Target =.. [target,Colour,Column,Line,Column1,Line1],
   move(GameState,Target,NewGameState),
@@ -113,15 +112,16 @@ askForMove(Colour,Column,Line):-
   Column = ColumnAux,
   Line = LineAux.
 
-  check_exit:-
-    controller(0,Controller0),
-    controller(1,Controller1),
-    Controller0 \= 'E',
-    Controller1 \= 'E'.
+check_exit:-
+  controller(0,Controller0),
+  controller(1,Controller1),
+  Controller0 \= 'E',
+  Controller1 \= 'E'.
 
 
 getMoveFromController('P',Colour,Column1,Line1):-
   !,
   askForMove(Colour,Column1,Line1).
 
-getMoveFromController('AI',Colour,Column1,Line1). %é preciso fazer
+
+getMoveFromController('AI',Colour,Column1,Line1).
