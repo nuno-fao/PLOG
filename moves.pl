@@ -2,15 +2,16 @@ valid_moves(gameState(Board,UnusedPieces,_,_),Player,ListOfMoves):-
     check_line(Board,0,ValidPosList),
     checkForRed(UnusedPieces,Player,ValidPosList,RedMoveList),
     checkForBlue(UnusedPieces,Player,ValidPosList,BlueMoveList),
-    append(RedMoveList,BlueMoveList,ListOfMoves).
+    append(RedMoveList,BlueMoveList,List),
+    random_permutation(List,ListOfMoves).
 
 checkForRed(UnusedPieces,Player,Valid,Altered):-
     verifyAvailablePiece(UnusedPieces,Player,'r'), !,
-    map(Valid,addColorToPos,'r',Altered).
+    map(Valid,addColourToPos,'r',Altered).
 checkForRed(_UnusedPieces,_Player,_Valid,[]).
 checkForBlue(UnusedPieces,Player,Valid,Altered):-
     verifyAvailablePiece(UnusedPieces,Player,'b'), !,
-    map(Valid,addColorToPos,'b',Altered).
+    map(Valid,addColourToPos,'b',Altered).
 checkForBlue(_UnusedPieces,_Player,_Valid,[]).
 
 map([], _, _, []).
@@ -18,8 +19,8 @@ map([X | List1], Transf, Colour, [Y | List2]) :-
     Func =.. [Transf, X, Colour, Y],
     Func,
     map(List1, Transf, Colour, List2).
-addColorToPos(Move,Colour,MoveWithColor):-
-    MoveWithColor = [Colour|Move].
+addColourToPos(Move,Colour,MoveWithColour):-
+    MoveWithColour = [Colour|Move].
 
 %posição vazia -> válida -> adicionar à lista
 check_pos(Line,P,[H|T],List) :-
@@ -47,6 +48,7 @@ check_pos(_,_,_,List):-
 check_line([H|T],Row,List) :-
     check_pos(Row,0,H,List1),
     R1 is Row + 1,
+    !,
     check_line(T,R1,List2),
     append(List1,List2,List).
 
@@ -111,43 +113,43 @@ replace_nth0(List, Index, OldElem, NewElem, NewList) :-
    % predicate works backwards: Index,NewElem,Transfer -> NewList
    nth0(Index,NewList,NewElem,Transfer).
 
-%mexe uma peça de cor Color de (XI,YI) para (XF,YF) em valores externos
-movePiece(Board,Color,XI,YI,XF,YF,NewBoard) :-
+%mexe uma peça de cor Colour de (XI,YI) para (XF,YF) em valores externos
+movePiece(Board,Colour,XI,YI,XF,YF,NewBoard) :-
     ext_to_int(XI,YI,YY1,XX1),
     ext_to_int(XF,YF,YY2,XX2),
     %mete vazio na inicial
     nth0(XX1,Board,Linha),
-    replace_nth0(Linha,YY1,Color,' ',NewLinha),
+    replace_nth0(Linha,YY1,Colour,' ',NewLinha),
     replace_nth0(Board,XX1,Linha,NewLinha,BoardInt),
 
-    %mete color no target 
+    %mete colour no target 
     nth0(XX2,BoardInt,Linha1),
-    replace_nth0(Linha1,YY2,' ',Color,NewLinha1),
+    replace_nth0(Linha1,YY2,' ',Colour,NewLinha1),
     replace_nth0(BoardInt,XX2,Linha1,NewLinha1,NewBoard).
 
 
 
 %Move a primeira peça acima
-moveDir(Board, CheckDirFunc, GetDirPosFunc, GetOposDirFunc, Color, XI, YI, NewBoard):-
+moveDir(Board, CheckDirFunc, GetDirPosFunc, GetOposDirFunc, Colour, XI, YI, NewBoard):-
     GetDir =.. [GetDirPosFunc,XI,YI,XT,YT], GetDir, %obter posição imediatamente a seguir na direção pretendida para começar a verificar
     CheckDir =.. [CheckDirFunc,Board,XT,YT,ColumnO,LineO,PieceO], CheckDir,  %obter peça mais próxima, se não encontrar muda de instanciação
-    applyMoveDir(Board, CheckDirFunc, GetDirPosFunc, GetOposDirFunc, Color,XI,YI,ColumnO,LineO,PieceO,NewBoard),   %peça encontrada agora falta movê-la
+    applyMoveDir(Board, CheckDirFunc, GetDirPosFunc, GetOposDirFunc, Colour,XI,YI,ColumnO,LineO,PieceO,NewBoard),   %peça encontrada agora falta movê-la
     !.
 moveDir(Board,_,_,_,_,_,_,NewBoard):-
     NewBoard = Board.   %nada acontece, copia board e segue jogo
-applyMoveDir(Board,_CheckDirFunc, GetDirPosFunc, _GetOposDirFunc,Color,XColocado,YColocado,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):-
-    Color \= ColorEncontrada, !,    %quando as peças são de cor diferente
+applyMoveDir(Board,_CheckDirFunc, GetDirPosFunc, _GetOposDirFunc,Colour,XColocado,YColocado,XEncontrado,YEncontrado,ColourEncontrada,NewBoard):-
+    Colour \= ColourEncontrada, !,    %quando as peças são de cor diferente
     GetDir =.. [GetDirPosFunc,XColocado,YColocado,XT,YT], GetDir, %obtem posição imediatamente a seguir na direção da que foi colocada
-    movePiece(Board,ColorEncontrada,XEncontrado,YEncontrado,XT,YT,NewBoard).        %move a peça para a posição obtida no predicado em cima
-applyMoveDir(Board,CheckDirFunc, GetDirPosFunc, GetOposDirFunc,Color,_,_,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):-
-    Color = ColorEncontrada,    %quando as peças são de cor igual
+    movePiece(Board,ColourEncontrada,XEncontrado,YEncontrado,XT,YT,NewBoard).        %move a peça para a posição obtida no predicado em cima
+applyMoveDir(Board,CheckDirFunc, GetDirPosFunc, GetOposDirFunc,Colour,_,_,XEncontrado,YEncontrado,ColourEncontrada,NewBoard):-
+    Colour = ColourEncontrada,    %quando as peças são de cor igual
     GetDir =.. [GetDirPosFunc,XEncontrado,YEncontrado,XT,YT], GetDir, %obtem posição imediatamente imediatamente a seguir da peça encontrada na direção pretendida 
     CheckDir =.. [CheckDirFunc,Board,XT,YT,ColumnO,LineO,_], CheckDir, !, %procura outra peça na mesma direção para colidir, se não houver passa à seguinte instanciação
     GetOposDir =.. [GetOposDirFunc,ColumnO,LineO,TargetX,TargetY], GetOposDir,  %obtem posição anterior à encontrada, que é para lá onde se vai mover a peça inicialmente encontrada
-    movePiece(Board,ColorEncontrada,XEncontrado,YEncontrado,TargetX,TargetY,NewBoard). %mover a peça
-applyMoveDir(Board,_CheckDirFunc, GetDirPosFunc, _GetOposDirFunc,_,XColocado,YColocado,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):- 
+    movePiece(Board,ColourEncontrada,XEncontrado,YEncontrado,TargetX,TargetY,NewBoard). %mover a peça
+applyMoveDir(Board,_CheckDirFunc, GetDirPosFunc, _GetOposDirFunc,_,XColocado,YColocado,XEncontrado,YEncontrado,ColourEncontrada,NewBoard):- 
     getVoidDir(GetDirPosFunc,XColocado,YColocado,XT,YT),   %obtem a célula void encontrada na direção pretendida
-    movePiece(Board,ColorEncontrada,XEncontrado,YEncontrado,XT,YT,NewBoard).    %move a peça para a zona void encontrada
+    movePiece(Board,ColourEncontrada,XEncontrado,YEncontrado,XT,YT,NewBoard).    %move a peça para a zona void encontrada
 getVoidDir(GetDirPosFunc,XI,YI,XV,YV):-    %obtem a célula void encontrada na direção pretendida
     verifyNotInVoid(XI,YI), !, %ainda não chegou ao void
     GetDir =.. [GetDirPosFunc,XI,YI,X1,Y1], GetDir,

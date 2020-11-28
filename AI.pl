@@ -1,14 +1,22 @@
-ai(GameState,OutGameState):-
-    getStates(GameState,NewGameStates),
-    getMaxSons(NewGameStates,-99999,GameState,OutGameState,_).
-getMaxSons([GameState|Rest],InValue,InGameState,OutGameState,OutValue):-
-    calcPoints(GameState,[P1,P2]),
-    NValue is P2 - P1,
+choose_move(GameState, Player ,'hard', Move):-
+    ai(GameState,Player,OutState),
+    retract(moves(OutState,Move)),
+    retractall(moves(_,_)).
+
+choose_move(GameState, Player ,'easy', Move):-
+    valid_moves(GameState,Player,ListOfMoves),
+    random_member(Move,ListOfMoves),
+    print(Move).
+
+ai(GameState,Player,OutGameState):-
+    getStates(GameState,Player,NewGameStates),
+    getMaxSons(NewGameStates,Player,-99999,GameState,OutGameState,_).
+getMaxSons([GameState|Rest],Player,InValue,InGameState,OutGameState,OutValue):-
+    value(GameState,Player,NValue),
     getmax(NValue,GameState,InValue,InGameState,OValue,OGameState),
-    getMaxSons(Rest,OValue,OGameState,OutGameState,OutValue).
-getMaxSons([GameState],InValue,InGameState,OutGameState,OutValue):-
-    calcPoints(GameState,[P1,P2]),
-    NValue is P2-P1,
+    getMaxSons(Rest,Player,OValue,OGameState,OutGameState,OutValue).
+getMaxSons([GameState],Player,InValue,InGameState,OutGameState,OutValue):-
+    value(GameState,Player,NValue),
     getmax(NValue,GameState,InValue,InGameState,OutValue,OutGameState).
     
 getmax(Value1,State1,Value2,State2,OutValue,OutState):-
@@ -25,11 +33,8 @@ getmax(Value1,State1,Value2,State2,OutValue,OutState):-
 
 getmax(Value1,State1,Value1,_,Value1,State1).
 
-
-
-
-getStates(GameState,NewGameStates):-
-    valid_moves(GameState,1,ListOfMoves),
+getStates(GameState,Player,NewGameStates):-
+    valid_moves(GameState,Player,ListOfMoves),
     ListOfMoves \= [],
     getValidMovesStates(ListOfMoves,GameState,NewGameStates).
 

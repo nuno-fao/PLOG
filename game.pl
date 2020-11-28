@@ -1,4 +1,6 @@
 :- use_module(library(lists)).
+:- use_module(library(random)).
+%:- consult('swi-random.pl').
 :- consult('display.pl').
 :- consult('end.pl').
 :- consult('moves.pl').
@@ -6,7 +8,7 @@
 :- consult('menus.pl').
 :- dynamic controller/2.
 :- dynamic difficulty/1.
-%:- consult('AI.pl').
+:- consult('AI.pl').
 %devolve o Board inicial
 %board(-Board)
 board([
@@ -51,22 +53,15 @@ loop(GameState,Winner) :-
   Winner = -1,
 	get_player(GameState,PlayerInit),
   controller(PlayerInit,Controller),
-  getMoveFromController(Controller,Colour,Column1,Line1),
+  getMoveFromController(GameState,Controller,Colour,Column1,Line1),
   ext_to_int(Column1, Line1, Line, Column),
   Target =.. [target,Colour,Column,Line,Column1,Line1],
   move(GameState,Target,NewGameState),
 	get_player(NewGameState,Player),
-  %valid_moves(NewGameState,Player,ListOfMoves),
   display_game(NewGameState,Player),
+  checkForConfirm(PlayerInit,[Colour,Column1,Line1]),
   game_over(NewGameState,Winner1),
-  %ai(NewGameState,AA),
-  %retract(moves(AA,[MColour,MX,MY])),
-  %ext_to_int(CP,CL,MY,MX),
-  %MTarget =.. [target,MColour,MX,MY,CP,CL],
-  %move(NewGameState,MTarget,MGameState),
-	%get_player(MGameState,Player),
-  %display_game(MGameState,Player),
-  %game_over(MGameState,Winner1),
+
   !,
   loop(NewGameState,Winner1).
 
@@ -102,12 +97,12 @@ odd(X) :- 1 is mod(X, 2).
 
 askForMove(Colour,Column,Line):-
   format("Which piece to Use(r or b): ",[]),
-  read(Read),
+  read(Read),clearB,
   (Read == 'r';Read == 'b'),
   format("Which Column to put It: ",[]),
-  read(ColumnAux), number(ColumnAux),
+  read(ColumnAux), number(ColumnAux),clearB,
   format("Which Line to put It: ",[]),
-  read(LineAux), number(LineAux), !,
+  read(LineAux), number(LineAux), !,clearB,
   Colour = Read,
   Column = ColumnAux,
   Line = LineAux.
@@ -119,9 +114,34 @@ check_exit:-
   Controller1 \= 'E'.
 
 
-getMoveFromController('P',Colour,Column1,Line1):-
+getMoveFromController(_,'P',Colour,Column1,Line1):-
   !,
   askForMove(Colour,Column1,Line1).
 
 
-getMoveFromController('AI',Colour,Column1,Line1).
+getMoveFromController(GameState,'AI',Colour,Column1,Line1):-
+  get_player(GameState,Player),
+  !,
+  difficulty(Level),
+  choose_move(GameState,Player,Level,[Colour,X,Y]),
+  ext_to_int(Column1,Line1,Y,X).
+
+
+checkForConfirm(Player,Move):-
+  controller(Player,C),
+  C = 'AI',
+  print('Computer has executed the move '),
+  print(Move),
+  print(', please press enter to proceed:'),
+  get_char(Char).
+checkForConfirm(Player,Move):-
+  controller(Player,C),
+  C = 'P',
+  print('You Executed the move: '),
+  print(Move),
+  print(', please press enter to proceed:'),
+  get_char(Char).
+
+clearB:-
+  get_char(Char).
+

@@ -3,7 +3,7 @@ mainMenu :-
     retract(controller(0,_X)),
     retract(controller(1,_X1)),
     write('Insert your option: '),
-    read(Input),
+    read(Input),clearB,
     manageGamemode(Input).
 
 manageGamemode(1):-
@@ -24,7 +24,7 @@ manageGamemode(0) :-
 manageGamemode(Number) :-
     (\+ number(Number); Number<0 ; Number>3),
     write('Invalid option!\n\n'), 
-    read(Input),
+    read(Input),clearB,
     manageGamemode(Input).
 
 
@@ -53,7 +53,7 @@ difficultyMenu :-
     printDifficulty,
     retract(difficulty(_Difficulty)),
     write('Insert your option: '),
-    read(InputD),
+    read(InputD),clearB,
     manageDifficulty(InputD).
 
 printDifficulty :-
@@ -69,11 +69,11 @@ printDifficulty :-
     write(' _______________________________________________________________________ '),nl,nl.
 
 manageDifficulty(1):-
-    assert(difficulty(easy)).
+    assert(difficulty('easy')).
 manageDifficulty(2):-
-    assert(difficulty(hard)).
+    assert(difficulty('hard')).
 manageDifficulty(_):-
     (\+ number(Number); Number<1 ; Number>2),
      write('Invalid option!\n\n'), 
-    read(Input),
+    read(Input),clearB,
     manageDifficulty(Input).

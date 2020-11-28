@@ -129,7 +129,12 @@ get_number_void(_,Red,Blue,_):-
   Red is 0,
   Blue is 0.
 
-calcPoints(gameState(Board,_,OutPieces,_),OutPoints):-
+value(gameState(Board,_,OutPieces,_),0,Value):-
+    Player = 0,
     get_number_void(Board,Red,Blue),
     get_points(P1,P2,Red,Blue,OutPieces),
-    OutPoints = [P1,P2].
+    Value = P1-P2.
+value(gameState(Board,_,OutPieces,_),1,Value):-
+    get_number_void(Board,Red,Blue),
+    get_points(P1,P2,Red,Blue,OutPieces),
+    Value = P2-P1.
