@@ -1,7 +1,7 @@
 mainMenu :-
     printMainMenu,
-    retract(controller(0,X)),
-    retract(controller(1,X1)),
+    retract(controller(0,_X)),
+    retract(controller(1,_X1)),
     write('Insert your option: '),
     read(Input),
     manageGamemode(Input).
@@ -51,7 +51,7 @@ printMainMenu :-
 
 difficultyMenu :-
     printDifficulty,
-    retract(difficulty(Difficulty)),
+    retract(difficulty(_Difficulty)),
     write('Insert your option: '),
     read(InputD),
     manageDifficulty(InputD).

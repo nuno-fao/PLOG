@@ -136,7 +136,7 @@ moveDir(Board, CheckDirFunc, GetDirPosFunc, GetOposDirFunc, Color, XI, YI, NewBo
     !.
 moveDir(Board,_,_,_,_,_,_,NewBoard):-
     NewBoard = Board.   %nada acontece, copia board e segue jogo
-applyMoveDir(Board,CheckDirFunc, GetDirPosFunc, GetOposDirFunc,Color,XColocado,YColocado,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):-
+applyMoveDir(Board,_CheckDirFunc, GetDirPosFunc, _GetOposDirFunc,Color,XColocado,YColocado,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):-
     Color \= ColorEncontrada, !,    %quando as peças são de cor diferente
     GetDir =.. [GetDirPosFunc,XColocado,YColocado,XT,YT], GetDir, %obtem posição imediatamente a seguir na direção da que foi colocada
     movePiece(Board,ColorEncontrada,XEncontrado,YEncontrado,XT,YT,NewBoard).        %move a peça para a posição obtida no predicado em cima
@@ -146,14 +146,14 @@ applyMoveDir(Board,CheckDirFunc, GetDirPosFunc, GetOposDirFunc,Color,_,_,XEncont
     CheckDir =.. [CheckDirFunc,Board,XT,YT,ColumnO,LineO,_], CheckDir, !, %procura outra peça na mesma direção para colidir, se não houver passa à seguinte instanciação
     GetOposDir =.. [GetOposDirFunc,ColumnO,LineO,TargetX,TargetY], GetOposDir,  %obtem posição anterior à encontrada, que é para lá onde se vai mover a peça inicialmente encontrada
     movePiece(Board,ColorEncontrada,XEncontrado,YEncontrado,TargetX,TargetY,NewBoard). %mover a peça
-applyMoveDir(Board,CheckDirFunc, GetDirPosFunc, GetOposDirFunc,_,XColocado,YColocado,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):- 
+applyMoveDir(Board,_CheckDirFunc, GetDirPosFunc, _GetOposDirFunc,_,XColocado,YColocado,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):- 
     getVoidDir(GetDirPosFunc,XColocado,YColocado,XT,YT),   %obtem a célula void encontrada na direção pretendida
     movePiece(Board,ColorEncontrada,XEncontrado,YEncontrado,XT,YT,NewBoard).    %move a peça para a zona void encontrada
 getVoidDir(GetDirPosFunc,XI,YI,XV,YV):-    %obtem a célula void encontrada na direção pretendida
     verifyNotInVoid(XI,YI), !, %ainda não chegou ao void
     GetDir =.. [GetDirPosFunc,XI,YI,X1,Y1], GetDir,
     getVoidDir(GetDirPosFunc,X1,Y1,XV,YV).
-getVoidDir(GetDirPosFunc,XI,YI,XV,YV):-    %chegou ao void
+getVoidDir(_GetDirPosFunc,XI,YI,XV,YV):-    %chegou ao void
     XV = XI,
     YV = YI.
 
