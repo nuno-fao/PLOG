@@ -93,12 +93,12 @@ move(gameState(Board,UnusedPieces,OutPieces,Player),target(Colour,X, Y, ColumnP,
     removeFromUnused(UnusedPieces,Player,Colour,NewUnusedPieces),
 
     %format("Point: ~p ~p ~n",[ColumnP,LineP]),
-    moveDir(NewBoard,checkUp,getUpPosition,getDownPosition,Colour,ColumnP,LineP,Board1),
-    moveDir(Board1,checkUpRight,getUpRightPosition,getDownLeftPosition,Colour,ColumnP,LineP,Board2),
-    moveDir(Board2,checkUpLeft,getUpLeftPosition,getDownRightPosition,Colour,ColumnP,LineP,Board3),
-    moveDir(Board3,checkDown,getDownPosition,getUpPosition,Colour,ColumnP,LineP,Board4),
-    moveDir(Board4,checkDownLeft,getDownLeftPosition,getUpRightPosition,Colour,ColumnP,LineP,Board5),
-    moveDir(Board5,checkDownRight,getDownRightPosition,getUpLeftPosition,Colour,ColumnP,LineP,Board6),
+    moveDir(NewBoard,getUpPosition,getDownPosition,Colour,ColumnP,LineP,Board1),
+    moveDir(Board1,getUpRightPosition,getDownLeftPosition,Colour,ColumnP,LineP,Board2),
+    moveDir(Board2,getUpLeftPosition,getDownRightPosition,Colour,ColumnP,LineP,Board3),
+    moveDir(Board3,getDownPosition,getUpPosition,Colour,ColumnP,LineP,Board4),
+    moveDir(Board4,getDownLeftPosition,getUpRightPosition,Colour,ColumnP,LineP,Board5),
+    moveDir(Board5,getDownRightPosition,getUpLeftPosition,Colour,ColumnP,LineP,Board6),
     %display_game(gameState(Board6,UnusedPieces,OutPieces,Player),Player),
 
     search_board(Board6,OutPieces,Board7,NewOutPieces,0,0),
@@ -130,24 +130,24 @@ movePiece(Board,Colour,XI,YI,XF,YF,NewBoard) :-
 
 
 %Move a primeira peça acima
-moveDir(Board, CheckDirFunc, GetDirPosFunc, GetOposDirFunc, Colour, XI, YI, NewBoard):-
+moveDir(Board, GetDirPosFunc, GetOposDirFunc, Color, XI, YI, NewBoard):-
     GetDir =.. [GetDirPosFunc,XI,YI,XT,YT], GetDir, %obter posição imediatamente a seguir na direção pretendida para começar a verificar
-    CheckDir =.. [CheckDirFunc,Board,XT,YT,ColumnO,LineO,PieceO], CheckDir,  %obter peça mais próxima, se não encontrar muda de instanciação
-    applyMoveDir(Board, CheckDirFunc, GetDirPosFunc, GetOposDirFunc, Colour,XI,YI,ColumnO,LineO,PieceO,NewBoard),   %peça encontrada agora falta movê-la
+    checkDir(Board,GetDirPosFunc,XT,YT,ColumnO,LineO,PieceO),%obter peça mais próxima, se não encontrar muda de instanciação
+    applyMoveDir(Board, GetDirPosFunc, GetOposDirFunc, Color,XI,YI,ColumnO,LineO,PieceO,NewBoard),   %peça encontrada agora falta movê-la
     !.
-moveDir(Board,_,_,_,_,_,_,NewBoard):-
+moveDir(Board,_,_,_,_,_,NewBoard):-
     NewBoard = Board.   %nada acontece, copia board e segue jogo
-applyMoveDir(Board,_CheckDirFunc, GetDirPosFunc, _GetOposDirFunc,Colour,XColocado,YColocado,XEncontrado,YEncontrado,ColourEncontrada,NewBoard):-
-    Colour \= ColourEncontrada, !,    %quando as peças são de cor diferente
+applyMoveDir(Board, GetDirPosFunc, _GetOposDirFunc,Color,XColocado,YColocado,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):-
+    Color \= ColorEncontrada, !,    %quando as peças são de cor diferente
     GetDir =.. [GetDirPosFunc,XColocado,YColocado,XT,YT], GetDir, %obtem posição imediatamente a seguir na direção da que foi colocada
-    movePiece(Board,ColourEncontrada,XEncontrado,YEncontrado,XT,YT,NewBoard).        %move a peça para a posição obtida no predicado em cima
-applyMoveDir(Board,CheckDirFunc, GetDirPosFunc, GetOposDirFunc,Colour,_,_,XEncontrado,YEncontrado,ColourEncontrada,NewBoard):-
-    Colour = ColourEncontrada,    %quando as peças são de cor igual
+    movePiece(Board,ColorEncontrada,XEncontrado,YEncontrado,XT,YT,NewBoard).        %move a peça para a posição obtida no predicado em cima
+applyMoveDir(Board, GetDirPosFunc, GetOposDirFunc,Color,_,_,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):-
+    Color = ColorEncontrada,    %quando as peças são de cor igual
     GetDir =.. [GetDirPosFunc,XEncontrado,YEncontrado,XT,YT], GetDir, %obtem posição imediatamente imediatamente a seguir da peça encontrada na direção pretendida 
-    CheckDir =.. [CheckDirFunc,Board,XT,YT,ColumnO,LineO,_], CheckDir, !, %procura outra peça na mesma direção para colidir, se não houver passa à seguinte instanciação
+    checkDir(Board,GetDirPosFunc,XT,YT,ColumnO,LineO,_), !, %procura outra peça na mesma direção para colidir, se não houver passa à seguinte instanciação
     GetOposDir =.. [GetOposDirFunc,ColumnO,LineO,TargetX,TargetY], GetOposDir,  %obtem posição anterior à encontrada, que é para lá onde se vai mover a peça inicialmente encontrada
-    movePiece(Board,ColourEncontrada,XEncontrado,YEncontrado,TargetX,TargetY,NewBoard). %mover a peça
-applyMoveDir(Board,_CheckDirFunc, GetDirPosFunc, _GetOposDirFunc,_,XColocado,YColocado,XEncontrado,YEncontrado,ColourEncontrada,NewBoard):- 
+    movePiece(Board,ColorEncontrada,XEncontrado,YEncontrado,TargetX,TargetY,NewBoard). %mover a peça
+applyMoveDir(Board, GetDirPosFunc, _GetOposDirFunc,_,XColocado,YColocado,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):- 
     getVoidDir(GetDirPosFunc,XColocado,YColocado,XT,YT),   %obtem a célula void encontrada na direção pretendida
     movePiece(Board,ColourEncontrada,XEncontrado,YEncontrado,XT,YT,NewBoard).    %move a peça para a zona void encontrada
 getVoidDir(GetDirPosFunc,XI,YI,XV,YV):-    %obtem a célula void encontrada na direção pretendida
@@ -158,8 +158,9 @@ getVoidDir(_GetDirPosFunc,XI,YI,XV,YV):-    %chegou ao void
     XV = XI,
     YV = YI.
 
+
 %Procura a primeira peça diretamente abaixo
-checkDown(Board, XI, YI, XO, YO, PieceO):-
+checkDir(Board, _DirPosFunc, XI, YI, XO, YO, PieceO):-
     verifyInBoard(XI,YI),
     ext_to_int(XI,YI,XX,YY),
     nth0(YY,Board,Linha),
@@ -169,97 +170,11 @@ checkDown(Board, XI, YI, XO, YO, PieceO):-
     XO is XI,
     YO is YI,
     !.
-checkDown(Board, XI, YI, XO, YO, PieceO):-
+checkDir(Board, DirPosFunc, XI, YI, XO, YO, PieceO):-
     verifyInBoard(XI,YI),
-    getDownPosition(XI,YI,X,Y),
-    !,
-    checkDown(Board,X,Y,XO,YO,PieceO).
-
-%Procura a primeira peça down left
-checkDownLeft(Board, XI, YI, XO, YO, PieceO):-
-    verifyInBoard(XI,YI),
-    ext_to_int(XI,YI,XX,YY),
-    nth0(YY,Board,Linha),
-    nth0(XX,Linha,Piece),
-    Piece \= ' ',
-    PieceO = Piece,
-    XO is XI,
-    YO is YI,
-    !.
-checkDownLeft(Board, XI, YI, XO, YO, PieceO):-
-    verifyInBoard(XI,YI),
-    getDownLeftPosition(XI,YI,X,Y),
-    !,
-    checkDownLeft(Board,X,Y,XO,YO,PieceO).
-
-%Procura a primeira peça down right
-checkDownRight(Board, XI, YI, XO, YO, PieceO):-
-    verifyInBoard(XI,YI),
-    ext_to_int(XI,YI,XX,YY),
-    nth0(YY,Board,Linha),
-    nth0(XX,Linha,Piece),
-    Piece \= ' ',
-    PieceO = Piece,
-    XO is XI,
-    YO is YI,
-    !.
-checkDownRight(Board, XI, YI, XO, YO, PieceO):-
-    verifyInBoard(XI,YI),
-    getDownRightPosition(XI,YI,X,Y),
-    !,
-    checkDownRight(Board,X,Y,XO,YO,PieceO).
-
-%Procura a primeira peça diretamente acima
-checkUp(Board, XI, YI, XO, YO, PieceO):-
-    verifyInBoard(XI,YI),
-    ext_to_int(XI,YI,XX,YY),
-    nth0(YY,Board,Linha),
-    nth0(XX,Linha,Piece),
-    Piece \= ' ',
-    PieceO = Piece,
-    XO is XI,
-    YO is YI,
-    !.
-checkUp(Board, XI, YI, XO, YO, PieceO):-
-    verifyInBoard(XI,YI),
-    getUpPosition(XI,YI,X,Y),
-    !,
-    checkUp(Board,X,Y,XO,YO,PieceO).
-
-%Procura a primeira peça up left
-checkUpLeft(Board, XI, YI, XO, YO, PieceO):-
-    verifyInBoard(XI,YI),
-    ext_to_int(XI,YI,XX,YY),
-    nth0(YY,Board,Linha),
-    nth0(XX,Linha,Piece),
-    Piece \= ' ',
-    PieceO = Piece,
-    XO is XI,
-    YO is YI,
-    !.
-checkUpLeft(Board, XI, YI, XO, YO, PieceO):-
-    verifyInBoard(XI,YI),
-    getUpLeftPosition(XI,YI,X,Y),
-    !,
-    checkUpLeft(Board,X,Y,XO,YO,PieceO).
-
-%Procura a primeira peça up right
-checkUpRight(Board, XI, YI, XO, YO, PieceO):-
-    verifyInBoard(XI,YI),
-    ext_to_int(XI,YI,XX,YY),
-    nth0(YY,Board,Linha),
-    nth0(XX,Linha,Piece),
-    Piece \= ' ',
-    PieceO = Piece,
-    XO is XI,
-    YO is YI,
-    !.
-checkUpRight(Board, XI, YI, XO, YO, PieceO):-
-    verifyInBoard(XI,YI),
-    getUpRightPosition(XI,YI,X,Y),
-    !,
-    checkUpRight(Board,X,Y,XO,YO,PieceO).
-
+    DirPos =.. [DirPosFunc,XI,YI,X,Y], DirPos,!,
+    %getDownPosition(XI,YI,X,Y),
+    checkDir(Board,DirPosFunc,X,Y,XO,YO,PieceO).
 
 getUpPosition(XI,YI,XO,YO):-
     XO is XI,
