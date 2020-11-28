@@ -69,7 +69,7 @@ loop(GameState,Winner) :-
   %display_game(MGameState,Player),
   %game_over(MGameState,Winner1),
   !,
-  loop(MGameState,Winner1).
+  loop(NewGameState,Winner1).
 
 loop(GameState,Winner) :-
   Winner = -1,
