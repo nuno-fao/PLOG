@@ -25,7 +25,7 @@ board([
             [' '] 
 ]).
 %unused_pieces(-UnusedPieces)
-unused_pieces([1,0,0,1]).
+unused_pieces([10,5,5,10]).
 %out_pieces(-OutPieces)
 out_pieces([0,0,0,0]).
 %player(-Player)
@@ -69,7 +69,7 @@ loop(GameState,Winner) :-
   %display_game(MGameState,Player),
   %game_over(MGameState,Winner1),
   !,
-  loop(MGameState,Winner1).
+  loop(NewGameState,Winner1).
 
 loop(GameState,Winner) :-
   Winner = -1,
