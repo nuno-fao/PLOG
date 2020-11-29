@@ -21,7 +21,6 @@ ai(GameState,Player,OutGameState):-
 %caso seja superior passa para o próximo get_max_of_sons o gamestate e o value na cabeça da lista, caso contrário passa os gamestate e value recebidos
 %get_max_of_sons(+NewGameStates,+Player,+InValue,+InGameState,-OutGameState,-OutValue).
 get_max_of_sons([GameState|Rest],Player,InValue,InGameState,OutGameState,OutValue):-
-get_max_of_sons([GameState|Rest],Player,InValue,InGameState,OutGameState,OutValue):-
     value(GameState,Player,NValue),
     get_max(NValue,GameState,InValue,InGameState,OValue,OGameState),
     get_max_of_sons(Rest,Player,OValue,OGameState,OutGameState,OutValue).
@@ -33,12 +32,12 @@ get_max_of_sons([GameState],Player,InValue,InGameState,OutGameState,OutValue):-
 %dados dois states e seu respetivos values devolve o maior state e o seu value
 %caso sejam iguais devolve os valores dos dois primeiros parametros
 %get_max(+Value1,+State1,+Value2,+State2,-OutValue,-OutState)
-get_max(Value1,State1,Value2,State2,OutValue,OutState):-
+get_max(Value1,State1,Value2,_State2,OutValue,OutState):-
     Value1 > Value2,
     OutValue = Value1,
     OutState = State1,
     !.
-get_max(Value1,State1,Value2,State2,OutValue,OutState):-
+get_max(Value1,_State1,Value2,State2,OutValue,OutState):-
     Value1 < Value2,
     OutValue = Value2,
     OutState = State2,

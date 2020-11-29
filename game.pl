@@ -143,16 +143,16 @@ check_for_confirm(Player,Move):-
   print('Computer has executed the move '),
   print(Move),
   print(', please press enter to proceed:'),
-  get_char(Char).
+  skip_line.
 check_for_confirm(Player,Move):-
   controller(Player,C),
   C = 'P',
   print('You Executed the move: '),
   print(Move),
   print(', please press enter to proceed:'),
-  get_char(Char).
+  skip_line.
 
 %limpa o buffer, reovendo os caracteres de newline introduzidos ao clicar em enter apó isnerir um move
 clear_buffer:-
-  get_char(Char).
+  get_char(_Char).
 

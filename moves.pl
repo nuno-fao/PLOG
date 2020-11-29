@@ -149,7 +149,7 @@ apply_move_dir(Board, GetDirPosFunc, GetOposDirFunc,Color,_,_,XEncontrado,YEncon
     move_piece(Board,ColorEncontrada,XEncontrado,YEncontrado,TargetX,TargetY,NewBoard). %mover a peça
 apply_move_dir(Board, GetDirPosFunc, _GetOposDirFunc,_,XColocado,YColocado,XEncontrado,YEncontrado,ColorEncontrada,NewBoard):- 
     get_void_dir(GetDirPosFunc,XColocado,YColocado,XT,YT),   %obtem a célula void encontrada na direção pretendida
-    move_piece(Board,ColourEncontrada,XEncontrado,YEncontrado,XT,YT,NewBoard).    %move a peça para a zona void encontrada
+    move_piece(Board,ColorEncontrada,XEncontrado,YEncontrado,XT,YT,NewBoard).    %move a peça para a zona void encontrada
 get_void_dir(GetDirPosFunc,XI,YI,XV,YV):-    %obtem a célula void encontrada na direção pretendida
     verify_not_in_void(XI,YI), !, %ainda não chegou ao void
     GetDir =.. [GetDirPosFunc,XI,YI,X1,Y1], GetDir,

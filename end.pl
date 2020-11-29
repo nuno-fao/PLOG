@@ -10,8 +10,8 @@ game_over(gameState(Board,unusedPieces(R0,B0,R1,B1),OutPieces,_),Winner) :-
   get_number_void(Board,Red,Blue),
   get_points(P1,P2,Red,Blue,OutPieces),
   get_winner(P1,P2,Red,Blue,OutPieces,Winner),
-  format("Player0 Points: ~p ~p ~n",[P1,Red]),
-  format("Player1 Points: ~p ~p ~n",[P2,Blue]).
+  format("Player0 Points: ~p ~n",[P1]),
+  format("Player1 Points: ~p ~n",[P2]).
 game_over(_,Winner) :-
   Winner is -1.
 
@@ -133,7 +133,7 @@ get_number_void(_,Red,Blue,_):-
   Red is 0,
   Blue is 0.
 
-$calcula o valor do GameState atual para o jogador especificado, devolvendo em Value
+%calcula o valor do GameState atual para o jogador especificado, devolvendo em Value
 %value(+GameState,+Player,-Value)
 value(gameState(Board,_,OutPieces,_),0,Value):-
     get_number_void(Board,Red,Blue),
