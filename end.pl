@@ -130,7 +130,6 @@ get_number_void(_,Red,Blue,_):-
   Blue is 0.
 
 value(gameState(Board,_,OutPieces,_),0,Value):-
-    Player = 0,
     get_number_void(Board,Red,Blue),
     get_points(P1,P2,Red,Blue,OutPieces),
     Value = P1-P2.
