@@ -1,11 +1,11 @@
-%chama o o ai especifico para o nivel de dificuldade, tendo em conta o jogador a maximizar e devolve em Move o movimento escolhido pelo AI
+%chama o AI especifico para o nivel de dificuldade, tendo em conta o jogador a maximizar e devolve em Move o movimento escolhido pelo AI
 %choose_move(+GameState,+Player,+Level,-Move)
-%chama o predicado ai que implementa uma ai, esse predicado guarda na base de dados o move associado a cada gamestate, o choose move 'hard' recupera esse move usando o gamestate devolvido pelo ai
+%chama o predicado AI que implementa uma AI, esse predicado guarda na base de dados o move associado a cada gamestate, o choose_move 'hard' recupera esse move usando o gamestate devolvido pelo AI
 choose_move(GameState, Player ,'hard', Move):-
     ai(GameState,Player,OutState),
     retract(moves(OutState,Move)),
     retractall(moves(_,_)).
-%devolve um move aleatório entre o smoves permitidos
+%devolve um move aleatório entre os moves permitidos
 choose_move(GameState, Player ,'easy', Move):-
     valid_moves(GameState,Player,ListOfMoves),
     random_member(Move,ListOfMoves),
@@ -17,7 +17,7 @@ ai(GameState,Player,OutGameState):-
     get_states(GameState,Player,NewGameStates),
     get_max_of_sons(NewGameStates,Player,-99999,GameState,OutGameState,_).
 
-% percorre 'iterativamente' a lista NewGameStates, e compara os valores do gamestate atual com o valor do gamestate recebido em InGameState,
+%percorre 'iterativamente' a lista NewGameStates, e compara os valores do gamestate atual com o valor do gamestate recebido em InGameState,
 %caso seja superior passa para o próximo get_max_of_sons o gamestate e o value na cabeça da lista, caso contrário passa os gamestate e value recebidos
 %get_max_of_sons(+NewGameStates,+Player,+InValue,+InGameState,-OutGameState,-OutValue).
 get_max_of_sons([GameState|Rest],Player,InValue,InGameState,OutGameState,OutValue):-
@@ -51,7 +51,7 @@ get_states(GameState,Player,NewGameStates):-
     ListOfMoves \= [],
     get_valid_moves_states(ListOfMoves,GameState,NewGameStates).
 
-% os moves recebidos sao aplicados ao gamestate e os GameStates resultantes sao devolvidos em NewGameStates
+% os moves recebidos são aplicados ao gamestate e os GameStates resultantes são devolvidos em NewGameStates
 % o predicado guarda também, associado a cada gamestate o move que o criou para que seja posteriormente possivel recuperar esse move, 
 % facto do tipo move(?GameState,?Move)
 %get_valid_moves_states(+Moves,+GameState,-NewGameStates):-

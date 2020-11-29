@@ -1,5 +1,5 @@
-%considerando o GameState recebido analiza se o jogo já acabou, e se sim devolve o vecedor(0 ou 1)
-%obtem o numero de elementos no void o numero de pontos e o numero de peças na zona de risco e calcula o spontos finais de cada jogador
+%considerando o GameState recebido analiza se o jogo já acabou, e se sim devolve o vencedor(0 ou 1)
+%obtem o numero de elementos no void o numero de pontos e o numero de peças na zona de risco e calcula os pontos finais de cada jogador
 %depois devolve em Winner o jogador que tiver obtido mais pontos
 %game_over(+GameState,-Winner)
 game_over(gameState(Board,unusedPieces(R0,B0,R1,B1),OutPieces,_),Winner) :-
@@ -61,7 +61,8 @@ get_points(P1,P2,_,_,outPieces(B0,B1,_,_)) :-
   P1 is B0,
   P2 is B1.
 
-
+%Dependendo da linha, lê a coluna mais à direita e retorna em Red ou Blue 1 se tiver uma peça dessa cor na célula
+%get_right_elem(+L1,-Red,-Blue)
 get_right_elem(L1,Red,Blue) :-
   same_length(L1,[1]),
   Red is 0,
@@ -85,8 +86,13 @@ get_right_elem(L1,Red,Blue) :-
   Red is 0,
   Blue is 1.
 
+
+
 get_number_void(Board,Red,Blue) :-
   get_number_void(Board,Red,Blue,0).
+
+%Pesquisa o tabuleiro completo por peças em zonas void
+%get_number_void(+Board,-Red,-Blue,-N)
 get_number_void([_|Tail],Red,Blue,N):-
   N>3,
   N<9,

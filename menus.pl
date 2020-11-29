@@ -1,3 +1,4 @@
+%Imprime o menu inicial e lê input 
 main_menu :-
     print_main_menu,
     retract(controller(0,_X)),
@@ -6,6 +7,8 @@ main_menu :-
     read(Input),clear_buffer,
     manage_game_mode(Input).
 
+%Trata de receber o input do menu incial e atualizar o predicado controller/2
+%manage_game_mode(Input)
 manage_game_mode(1):-
     assert(controller(0,'P')),
     assert(controller(1,'P')).
@@ -27,7 +30,7 @@ manage_game_mode(Number) :-
     read(Input),clear_buffer,
     manage_game_mode(Input).
 
-
+%Imprime o menu inicial
 print_main_menu :-
     nl,
     write(' _______________________________________________________________________ '),nl,
@@ -48,7 +51,7 @@ print_main_menu :-
     write('|                                                                       |'),nl,
     write(' _______________________________________________________________________ '),nl,nl.
 
-
+%Imprime o menu de dificuldades e lê input 
 difficulty_menu :-
     print_difficulty,
     retract(difficulty(_Difficulty)),
@@ -56,6 +59,7 @@ difficulty_menu :-
     read(InputD),clear_buffer,
     manage_difficulty(InputD).
 
+%Imprime o menu o dificulades
 print_difficulty :-
     nl,
     write(' _______________________________________________________________________ '),nl,
@@ -68,6 +72,8 @@ print_difficulty :-
     write('|                                                                       |'),nl,
     write(' _______________________________________________________________________ '),nl,nl.
 
+%Trata de receber o input do menu de dificuldades e atualizar o predicado difficulty/1
+%manage_difficulty(Input)
 manage_difficulty(1):-
     assert(difficulty('easy')).
 manage_difficulty(2):-

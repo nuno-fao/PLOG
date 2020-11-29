@@ -26,8 +26,11 @@ board([
           [' ',' '],
             [' '] 
 ]).
+
+% [Red0,Blue0,Red1,Blue1]
 %unused_pieces(-UnusedPieces)
 unused_pieces([10,5,5,10]).
+% [RedBonus,BlueBonus,RedRisk,BlueRisk]
 %out_pieces(-OutPieces)
 out_pieces([0,0,0,0]).
 %player(-Player)
@@ -37,7 +40,7 @@ controller(0,'undefined').
 controller(1,'undefined').
 difficulty('undefined').
 
-%inicia o jogo e o estado de jogo mostrando depois o tabuleiro
+%inicia o jogo, mostra os menus e o estado de jogo mostrando depois o tabuleiro
 play :-
 	initial(GameState),
   main_menu,
@@ -49,7 +52,7 @@ play :-
   play.
 play.
 
-%loop principal, chama obtem os moves e aplica-os, calcula o vencedor e caso seja igual a 0 ou 1, acaba o jogo
+%loop principal, obtem os moves e aplica-os, calcula o vencedor e caso seja igual a 0 ou 1, acaba o jogo
 %caso o winner seja -1 significa que o jogo não acabou e continua o ciclo
 %loop(+GameState,+Winner)
 loop(GameState,-1) :-
@@ -67,12 +70,14 @@ loop(GameState,-1) :-
   !,
   loop(NewGameState,Winner1).
 
+%Algo correu mal, volta ao inicia sem mudar o GameState
 loop(GameState,-1) :-
   game_over(GameState,Winner),
   format("Invalid Input~n",[]),
   !,
   loop(GameState,Winner).
 
+%Fim Do jogo
 loop(_,Winner) :-
   format("Winner: ~p~n",[Winner]).
 
@@ -96,7 +101,7 @@ even(X) :- 0 is mod(X, 2).
 %devolve verdade se o parâmetro for ímpar
 odd(X) :- 1 is mod(X, 2).
 
-%pede um move ao jogador e devolve esse move no parametros od predicado
+%pede um move ao jogador e devolve esse move nos parametros do predicado
 %caso seja possivel identificar um erro sintatico do input (cor = 4 por exemplo) o predicado falha
 %ask_for_move(-Colour,-Column,-Line)
 ask_for_move(Colour,Column,Line):-
@@ -124,8 +129,6 @@ check_exit:-
 get_move_from_controller(_,'P',Colour,Column1,Line1):-
   !,
   ask_for_move(Colour,Column1,Line1).
-
-
 get_move_from_controller(GameState,'AI',Colour,Column1,Line1):-
   get_player(GameState,Player),
   !,
