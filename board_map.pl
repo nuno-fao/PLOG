@@ -84,6 +84,14 @@ get_line(Line,Col,Out) :-
     Out is Aux2 + Dif,
     !.
 
+    
+change_to_internal(Col,Line,NewCol,NewLine) :-
+    get_col(Line,Col,NewCol),
+    get_line(Line,Col,NewLine),
+    print([Col,Line,NewCol,NewLine]).
+
+%falha se a Col e Line estiverem na zona de Void
+%verify_not_in_void(+Col,+Line)
 verify_not_in_void(Col,Line):-
     Col > 1,
     Col < 7,
@@ -91,15 +99,11 @@ verify_not_in_void(Col,Line):-
     Line < 7,
     (Col = 4 ; ((Col = 2; Col = 6), Line < 5 ); ((Col = 3; Col = 5), Line < 6)).
 
-
+%falha se a Col e Line estiverem fora do tabuleiro(tabuleiro inclui a zona void)
+%verify_in_board(+Col,+Line)
 verify_in_board(Col,Line):-
     Col > 0,
     Col < 8,
     Line > 0,
     Line < 8,
     (Col = 4 ; Col = 1; Col = 7; ((Col = 2; Col = 6), Line < 6 ); ((Col = 3; Col = 5), Line < 7)).
-
-change_to_internal(Col,Line,NewCol,NewLine) :-
-    get_col(Line,Col,NewCol),
-    get_line(Line,Col,NewLine),
-    print([Col,Line,NewCol,NewLine]).

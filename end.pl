@@ -1,3 +1,7 @@
+%considerando o GameState recebido analiza se o jogo já acabou, e se sim devolve o vecedor(0 ou 1)
+%obtem o numero de elementos no void o numero de pontos e o numero de peças na zona de risco e calcula o spontos finais de cada jogador
+%depois devolve em Winner o jogador que tiver obtido mais pontos
+%game_over(+GameState,-Winner)
 game_over(gameState(Board,unusedPieces(R0,B0,R1,B1),OutPieces,_),Winner) :-
   R0=0,
   R1=0,
@@ -11,6 +15,9 @@ game_over(gameState(Board,unusedPieces(R0,B0,R1,B1),OutPieces,_),Winner) :-
 game_over(_,Winner) :-
   Winner is -1.
 
+%calcula o vencedor utilizando as regras de jogo
+%para tal utiliza os valores dos pontos dos jogadores, as suas peças no void e as peças na zona de risco
+%get_winner(+P0,+P1,+Red,+Blue,+OutPieces,-Winner),
 get_winner(P1,P2,_,_,_,Winner) :-
   P1 < P2,
   Winner is 1,
@@ -38,9 +45,8 @@ get_winner(_,_,_,_,outPieces(_,_,R0,R1),Winner) :-
 get_winner(_,_,_,_,_,Winner) :-
   Winner is 2.
 
-
-
-
+%obtem os pontos de cada jogador
+%get_points(-P0,-P1,+Red,+Blue,+OutPieces))
 get_points(P1,P2,Red,Blue,outPieces(B0,B1,R0,_)) :-
   Red > Blue,
   P1 is B0 - R0,
@@ -54,8 +60,6 @@ get_points(P1,P2,Red,Blue,outPieces(B0,B1,_,R1)) :-
 get_points(P1,P2,_,_,outPieces(B0,B1,_,_)) :-
   P1 is B0,
   P2 is B1.
-
-
 
 
 get_right_elem(L1,Red,Blue) :-
@@ -129,6 +133,8 @@ get_number_void(_,Red,Blue,_):-
   Red is 0,
   Blue is 0.
 
+$calcula o valor do GameState atual para o jogador especificado, devolvendo em Value
+%value(+GameState,+Player,-Value)
 value(gameState(Board,_,OutPieces,_),0,Value):-
     get_number_void(Board,Red,Blue),
     get_points(P1,P2,Red,Blue,OutPieces),

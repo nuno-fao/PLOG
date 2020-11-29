@@ -49,8 +49,10 @@ play :-
   play.
 play.
 
-loop(GameState,Winner) :-
-  Winner = -1,
+%loop principal, chama obtem os moves e aplica-os, calcula o vencedor e caso seja igual a 0 ou 1, acaba o jogo
+%caso o winner seja -1 significa que o jogo não acabou e continua o ciclo
+%loop(+GameState,+Winner)
+loop(GameState,-1) :-
 	get_player(GameState,PlayerInit),
   controller(PlayerInit,Controller),
   get_move_from_controller(GameState,Controller,Colour,Column1,Line1),
@@ -65,8 +67,7 @@ loop(GameState,Winner) :-
   !,
   loop(NewGameState,Winner1).
 
-loop(GameState,Winner) :-
-  Winner = -1,
+loop(GameState,-1) :-
   game_over(GameState,Winner),
   format("Invalid Input~n",[]),
   !,
@@ -95,6 +96,9 @@ even(X) :- 0 is mod(X, 2).
 %devolve verdade se o parâmetro for ímpar
 odd(X) :- 1 is mod(X, 2).
 
+%pede um move ao jogador e devolve esse move no parametros od predicado
+%caso seja possivel identificar um erro sintatico do input (cor = 4 por exemplo) o predicado falha
+%ask_for_move(-Colour,-Column,-Line)
 ask_for_move(Colour,Column,Line):-
   format("Which piece to Use(r or b): ",[]),
   read(Read),clear_buffer,
@@ -107,6 +111,7 @@ ask_for_move(Colour,Column,Line):-
   Column = ColumnAux,
   Line = LineAux.
 
+%check_exit/0 falha caso os controllers estejam em estado saida('E')
 check_exit:-
   controller(0,Controller0),
   controller(1,Controller1),
@@ -114,6 +119,8 @@ check_exit:-
   Controller1 \= 'E'.
 
 
+%dependendo do tipo de controller(Pessoa ou AI), chama os predicados responsáveis por obter o moves respetivos
+%get_move_from_controller(GameState,+Controller_Type,-Colour,-Column,-Line)
 get_move_from_controller(_,'P',Colour,Column1,Line1):-
   !,
   ask_for_move(Colour,Column1,Line1).
@@ -126,7 +133,10 @@ get_move_from_controller(GameState,'AI',Colour,Column1,Line1):-
   choose_move(GameState,Player,Level,[Colour,X,Y]),
   ext_to_int(Column1,Line1,Y,X).
 
-
+%imprime o movimento efetuado e fica à espera de receber input(enter) para poder continuar o loop
+%este predicado impede que o computador faça a sua jogada e que o jogador não consiga ver as alterações imediatas no tabuleiro
+%previne também que o jogo AIxAI seja executado até ao fim quase instantaneamente
+%check_for_confirm(+Player,+Move)
 check_for_confirm(Player,Move):-
   controller(Player,C),
   C = 'AI',
@@ -142,6 +152,7 @@ check_for_confirm(Player,Move):-
   print(', please press enter to proceed:'),
   get_char(Char).
 
+%limpa o buffer, reovendo os caracteres de newline introduzidos ao clicar em enter apó isnerir um move
 clear_buffer:-
   get_char(Char).
 
