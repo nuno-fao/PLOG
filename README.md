@@ -76,7 +76,7 @@ O output deste predicado num estado inicial, intermédio e final seria respetiva
 >![output final](./img/output_final.png)
 
 ### Lista de Jogadas Válidas
-A listagem das jogadas válidas é obtida usando o predicado valid_moves(+GameState, +Player, -ListOfMoves) recebendo um GameState e o Player para o qual deve listar as jogadas válidas unificando-as com ListOfMoves. Recorrendo um predicado ao auxiliar check_line([H|T], Row, List) que recursivamente percorre todas as células do board vai-se obter em List todas as células do tabuleiro que estão desocupadas nem estão numa zona void. De seguida, com a lista obtida vai-se criar outras duas que contêm as mesmas jogadas mas com as cores das peças adicionadas se tiverem disponiveis. Se uma cor não estiver disponível os predicados checkForRed/4 e checkForBlue/4 constroem uma lista vazia. No fim o ListOfMoves será o append das duas listas obtidas.
+A listagem das jogadas válidas é obtida usando o predicado valid_moves(+GameState, +Player, -ListOfMoves) recebendo um GameState e o Player para o qual deve listar as jogadas válidas unificando-as com ListOfMoves. Recorrendo um predicado ao auxiliar check_line([H|T], Row, List) que recursivamente percorre todas as células do board vai-se obter em List todas as células do tabuleiro que estão desocupadas nem estão numa zona void. De seguida, com a lista obtida vai-se criar outras duas que contêm as mesmas jogadas mas com as cores das peças adicionadas se tiverem disponiveis. Se uma cor não estiver disponível os predicados checkForRed/4 e checkForBlue/4 constroem uma lista vazia. No fim o ListOfMoves será o append das duas listas obtidas. Um extra que decidimos colocar foi dar random sort da lista final por causa do AI que, como vai ser explicado na secção "Jogada do Computador", escolha a jogada com base na pontuação e se houvesse várias com a mesma pontuação, escolhia sempre a primeira. Desta maneira, evitamos esse problema.
  
 ### Execução de Jogadas
 A uma jogada é validade e executada maioritariamente pelo predicado move(+GameState,+Move,-NewGameState) mas depende de várias coisas até isso acontecer. Primeiramente, no loop principal é identificado o controlador do jogador que tem a vez. Se for humano, pede a cor, coluna e linhas em que o jogador deseja colocar a peça, fazendo uma verificação muito básica do que recebe. Se não for humano obtem a jogada como é explicado na seccção "Jogada do Computador". 
@@ -108,15 +108,24 @@ O predicado choose_move(+GameState, +Player, +Level, -Move) é responsável por 
 
 Se a dificuldade for easy implica que cada jogada será obtida de forma aleatória. Assim primeiro é necessário obter a listagem de jogadas válidas usando valid_moves e recorrendo ao predicado random_member da biblioteca random escolhe-se uma dessas jogadas para se efetuar.
 
-No entanto, se dificuldade for hard.
-
-O facto de, em ambas as dificuldades, as jogadas serem obtidas a partir do valid_moves implica que depois, no move, as verificações são todas inuteis.
+No entanto, se dificuldade for hard. blá blá blá.
+Um problema que tinhamos inicialmente com esta dificuldade foi o facto de caso houvesse jogadas com a mesma pontuação, escolhia sempre a primeira na lista o que tornaria os jogos muito repetitivos (principalmente no modo Computer vs Computer onde os jogos seriam literalmente sempre iguais). Para circundar esta situação decidimos dar random sort na listagem das jogadas válidas. Assim garante uma certa aleatoriedade relativamente à jogada escolhida ainda que seja sempre uma das que tem maior pontuação.
 
 ## Conclusão
 Devido à estrutura hexagonal do tabuleiro e às mecanicas do jogo tivemos algumas dificuldades nos aspetos de manipulação do board como, por exemplo, a percorrer o mesmo. O que ainda dificultou mais o processo inicialmente foi o facto de as coordenadas duma célula que o jogador vê são completamente diferentes das coordenadas internas do tabuleiro pelo que tivemos mapear posições internas para externas no board_map.pl e trabalhar constantemente com as 2 posições.
 
-Outro "problema" que tivemos com a estrutura do tabuleiro foi a identificação duma célula para que o utilizador a escolhe-se para uma jogada. Foi-nos sugerido que colocássemos a identificação dentro da própria célula mas depois de experimentar-mos tornou o tabuleiro muito condensado e difícil de ler o que nos levou a deixar apenas a identificação das colunas e pedir o input fazendo a contagem de cima para baixo.
+Outro "problema" que tivemos com a estrutura do tabuleiro foi a identificação duma célula para que o utilizador a escolhesse para uma jogada. Foi-nos sugerido que colocássemos a identificação dentro da própria célula mas depois de experimentar-mos tornou o tabuleiro muito condensado e difícil de ler o que nos levou a deixar apenas a identificação das colunas e pedir o input fazendo a contagem de cima para baixo.
 
-Como em todos os programas, há aspetos do nosso trabalho que podiam ser melhorados, como por exemplo, acrescentar outro nível de dificuldade que verifica a melhor jogada com maior profundidade em vez de a escolher de modo "greedy". Outro aspeto que podiamos melhorar é o desempenho de alguns predicados.
+Como em todos os programas, há aspetos do nosso trabalho que podiam ser melhorados, como por exemplo, acrescentar outro nível de dificuldade que verifica a melhor jogada com maior profundidade em vez de a escolher de modo "greedy". Outro aspeto que podiamos melhorar é o facto do move fazer verificações inuteis quando o controlador do player é o computador dado que o obtém a jogada a partir do valid_moves.
+
+Concluindo, pensamos que cumprimos todos os objetivos deste trabalho prático nomeadamente implementar o jogo na sua totalidade e no processo adquirir um maior entendimento da linguagem de programação lógica Prolog.
 
 ## Bibliografia
+Página oficial do jogo
+- https://nestorgames.com/#gauss_detail
+
+Rulebook
+- https://nestorgames.com/rulebooks/GAUSS_EN.pdf
+
+SICStus Prolog User’s Manual
+- https://sicstus.sics.se/sicstus/docs/latest4/pdf/sicstus.pdf
