@@ -40,9 +40,9 @@ Rulebook: https://nestorgames.com/rulebooks/GAUSS_EN.pdf
 
 - O tabuleiro de jogo original tem 7 filas com 4 a 7 hexágonos pequenos de maneira a representar um hexágono maior. No entanto, para conseguirmos desenhar o tabuleiro como pretendido em PROLOG teremos de o desenhar na vertical (com 13 filas "intercaladas" cada uma com 1 a 4 hexágonos) o que não altera logística do jogo em si.
 
-- As peças dos jogadores são representadas por uma lista de duas listas. A primeira lista representa as peças do jogador 0 e a segunda as peças do jogador 1. Cada elemento da lista de um jogador representa o numero de peças não usadas. [[PeçasVermelhas0,PeçasAzuis0],[PeçasVermelhas1,PeçasAzuis1]]
+- As peças dos jogadores são representadas por uma lista . Os dois primeiros elementos são as peças do jogador 0 e os outros 2 as peças do jogador 1. Cada elemento da lista de um jogador representa o numero de peças não usadas. [PeçasVermelhas0,PeçasAzuis0,PeçasVermelhas1,PeçasAzuis1]
 
-- Peças recolhidas serão guardadas de maneira idêntica às que ainda não foram jogadas só que em vez de jogadores temos área de risco e área de bónus.[[BonusVermelho,BonusAzul],[RiscoVermelho,RiscoAzul]]
+- Peças recolhidas serão guardadas de maneira idêntica às que ainda não foram jogadas só que em vez de jogadores temos área de risco e área de bónus.[BonusVermelho,BonusAzul,RiscoVermelho,RiscoAzul]
 
 - O jogador atual será guardado como um inteiro que terá o valor de 0 ou 1 para indicar o turno.
 
@@ -66,8 +66,9 @@ Rulebook: https://nestorgames.com/rulebooks/GAUSS_EN.pdf
 
 Ao executar play, é encontrado um menu inicial que mostra os vários modos e pede ao utilizador que escolha entre eles. Se o modo escolhido tiver envolver que o computador controle um dos jogadores, aparecerá outro menu ainda a perguntar a dificuldade do AI.
 
->Imagem Do Menu 1
->Imagem Do Menu 2
+>![Menu Inicial](./img/menu_inicial.png)
+
+>![Menu Dificuldades](./img/menu_dificuldades.png)
 
 O predicado responsável pela visualização do estado de jogo a cada instante recebe o tabuleiro, peças por jogar, peças recolhidas, o turno e um elemento extra que começa em 1 e vai sendo iterado para saber qual a fila a desenhar dado que desenhar um tabuleiro com espaços hexagonais com elementos ASCII é relativamente complexo. A cada fila remove-se a HEAD da cópia da lista do tabuleiro para se desenhar os valores certos no tabuleiro. 
 
@@ -82,10 +83,12 @@ O output deste predicado num estado inicial, intermédio e final seria respetiva
 >![output final](./img/output_final.png)
 
 Relativamente à interação com o utilizador esta não é muita visto que só existe para pedir uma jogada ao utilizador quando for relevante e para confirmar as jogadas tanto dele como do computador. 
->Imagem de confirmações
+
+>![Confirmar Jogada](./img/confirma_jogada.png)
 
 Quanto ao input duma jogada, é primeiro pedido a cor da peça a jogar, que tem de ser obrigatoriamente 'r' ou 'b'. Depois é pedido o numero da coluna onde pretende colocar a peça seguido da linha, a contar de cima, dessa coluna onde o quer fazer. Em cada coluna as linhas começam-se a contar a partir do 1.
->Imagem de Input
+
+>![Input do Jogador](./img/input.png)
 
 ### Lista de Jogadas Válidas
 A listagem das jogadas válidas é obtida usando o predicado valid_moves(+GameState, +Player, -ListOfMoves) recebendo um GameState e o Player para o qual deve listar as jogadas válidas unificando-as com ListOfMoves. Recorrendo um predicado ao auxiliar check_line([H|T], Row, List) que recursivamente percorre todas as células do board vai-se obter em List todas as células do tabuleiro que estão desocupadas e fora da zona void. De seguida, com a lista obtida vai-se criar outras duas que contêm as mesmas jogadas mas com as cores das peças adicionadas se tiverem disponiveis. Se uma cor não estiver disponível os predicados checkForRed/4 e checkForBlue/4 constroem uma lista vazia. No fim o ListOfMoves será o append das duas listas obtidas. Um extra que decidimos colocar foi dar random sort da lista final por causa do AI que, como vai ser explicado na secção "Jogada do Computador", escolhe a jogada com base no valor do tabuleiro e se houvesse várias com a mesma pontuação, escolheria sempre a primeira. Desta maneira, evitamos esse problema.

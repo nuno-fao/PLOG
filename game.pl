@@ -36,8 +36,13 @@ out_pieces([0,0,0,0]).
 %player(-Player)
 player(0).
 
+%controlador de jogador
+%controller(?Jogador,?Controlador)
 controller(0,'undefined').
 controller(1,'undefined').
+
+%dificuldade do jogo
+%difficulty(?Dificuldade)
 difficulty('undefined').
 
 %inicia o jogo, mostra os menus e o estado de jogo mostrando depois o tabuleiro

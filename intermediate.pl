@@ -2,53 +2,59 @@
 intermediate_board([
             [' '],  
           [' ',' '],
-        [' ','R','B'],
+        [' ','r','b'],
       [' ',' ',' ',' '],
         [' ',' ',' '],
-      [' ',' ','R',' '],
-        ['B',' ',' '],
+      [' ',' ','r',' '],
+        ['b',' ',' '],
       [' ',' ',' ',' '],
         [' ',' ',' '],
       [' ',' ',' ',' '],
-        ['B',' ',' '],
-          ['B',' '],
+        ['b',' ',' '],
+          ['b',' '],
             [' '] 
 ]).
-intermediate_unused_pieces([[7,2],[2,8]]).
-intermediate_out_pieces([[4,0],[0,1]]).
-intermesdiate_player(1).
+intermediate_unused_pieces([7,2,2,8]).
+intermediate_out_pieces([4,0,0,1]).
+intermediate_player(1).
 
 %inicializar o GameState com uma lista de listas com informação do estado de jogo intermédio
 intermediate_state(GameState) :-
 	intermediate_board(Board),
-	intermediate_unused_pieces(UnusedPieces),
-	intermediate_out_pieces(OutPieces),
-	intermesdiate_player(Player),
-	GameState = [Board,UnusedPieces,OutPieces,Player].
+	intermediate_unused_pieces(UnusedPiecesL),
+	intermediate_out_pieces(OutPiecesL),
+	intermediate_player(Player),
+
+  UnusedPieces =.. [unusedPieces|UnusedPiecesL],
+  OutPieces =.. [outPieces|OutPiecesL],
+	GameState =.. [gameState,Board,UnusedPieces,OutPieces,Player].
 	
 final_board([
             [' '],  
           [' ',' '],
-        [' ','R','B'],
-      [' ','R',' ',' '],
+        [' ','r','b'],
+      [' ','r',' ',' '],
         [' ',' ',' '],
-      [' ',' ','R',' '],
-        ['B',' ','B'],
-      [' ',' ','B',' '],
+      [' ',' ','r',' '],
+        ['b',' ','b'],
+      [' ',' ','b',' '],
         [' ',' ',' '],
       [' ',' ',' ',' '],
-        ['B',' ',' '],
-          ['B',' '],
+        ['b',' ',' '],
+          ['b',' '],
             [' '] 
 ]).
-final_unused_pieces([[0,0],[0,0]]).
-final_out_pieces([[12,4],[0,3]]).
+final_unused_pieces([0,0,0,0]).
+final_out_pieces([9,6,3,3]).
 final_player(1).
 
 %inicializar o GameState com uma lista de listas com informação do estado de jogo final
 final_state(GameState) :-
 	final_board(Board),
-	final_unused_pieces(UnusedPieces),
-	final_out_pieces(OutPieces),
+	final_unused_pieces(UnusedPiecesL),
+	final_out_pieces(OutPiecesL),
 	final_player(Player),
-	GameState = [Board,UnusedPieces,OutPieces,Player].
+
+	UnusedPieces =.. [unusedPieces|UnusedPiecesL],
+  OutPieces =.. [outPieces|OutPiecesL],
+	GameState =.. [gameState,Board,UnusedPieces,OutPieces,Player].
