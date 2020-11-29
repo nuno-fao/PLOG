@@ -84,7 +84,7 @@ get_line(Line,Col,Out) :-
     Out is Aux2 + Dif,
     !.
 
-verifyNotInVoid(Col,Line):-
+verify_not_in_void(Col,Line):-
     Col > 1,
     Col < 7,
     Line > 1,
@@ -92,7 +92,7 @@ verifyNotInVoid(Col,Line):-
     (Col = 4 ; ((Col = 2; Col = 6), Line < 5 ); ((Col = 3; Col = 5), Line < 6)).
 
 
-verifyInBoard(Col,Line):-
+verify_in_board(Col,Line):-
     Col > 0,
     Col < 8,
     Line > 0,

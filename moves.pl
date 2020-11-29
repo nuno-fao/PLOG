@@ -1,32 +1,32 @@
 valid_moves(gameState(Board,UnusedPieces,_,_),Player,ListOfMoves):-
     check_line(Board,0,ValidPosList),
-    checkForRed(UnusedPieces,Player,ValidPosList,RedMoveList),
-    checkForBlue(UnusedPieces,Player,ValidPosList,BlueMoveList),
+    check_for_red(UnusedPieces,Player,ValidPosList,RedMoveList),
+    check_for_blue(UnusedPieces,Player,ValidPosList,BlueMoveList),
     append(RedMoveList,BlueMoveList,List),
     random_permutation(List,ListOfMoves).
 
-checkForRed(UnusedPieces,Player,Valid,Altered):-
-    verifyAvailablePiece(UnusedPieces,Player,'r'), !,
-    map(Valid,addColourToPos,'r',Altered).
-checkForRed(_UnusedPieces,_Player,_Valid,[]).
-checkForBlue(UnusedPieces,Player,Valid,Altered):-
-    verifyAvailablePiece(UnusedPieces,Player,'b'), !,
-    map(Valid,addColourToPos,'b',Altered).
-checkForBlue(_UnusedPieces,_Player,_Valid,[]).
+check_for_red(UnusedPieces,Player,Valid,Altered):-
+    verify_available_piece(UnusedPieces,Player,'r'), !,
+    map(Valid,add_colour_to_pos,'r',Altered).
+check_for_red(_UnusedPieces,_Player,_Valid,[]).
+check_for_blue(UnusedPieces,Player,Valid,Altered):-
+    verify_available_piece(UnusedPieces,Player,'b'), !,
+    map(Valid,add_colour_to_pos,'b',Altered).
+check_for_blue(_UnusedPieces,_Player,_Valid,[]).
 
 map([], _, _, []).
 map([X | List1], Transf, Colour, [Y | List2]) :-
     Func =.. [Transf, X, Colour, Y],
     Func,
     map(List1, Transf, Colour, List2).
-addColourToPos(Move,Colour,MoveWithColour):-
+add_colour_to_pos(Move,Colour,MoveWithColour):-
     MoveWithColour = [Colour|Move].
 
 %posição vazia -> válida -> adicionar à lista
 check_pos(Line,P,[H|T],List) :-
     H = ' ',
     ext_to_int(Col,Ind,P,Line),
-    verifyNotInVoid(Col,Ind),
+    verify_not_in_void(Col,Ind),
     P1 is P + 1,
     !,
     check_pos(Line,P1,T,List1),
@@ -57,40 +57,40 @@ check_line(_,_,List) :-
     List = [],
     !.
 
-verifyAvailablePiece(unusedPieces(UnusedRed0,UnusedBlue0,_,_),0,Colour) :-
-    verifyAvailableAux(UnusedRed0,UnusedBlue0,Colour).
-verifyAvailablePiece(unusedPieces(_,_,UnusedRed1,UnusedBlue1),1,Colour) :-
-    verifyAvailableAux(UnusedRed1,UnusedBlue1,Colour).
-verifyAvailableAux(UnusedRed,_,'r'):-
+verify_available_piece(unusedPieces(UnusedRed0,UnusedBlue0,_,_),0,Colour) :-
+    verify_available_aux(UnusedRed0,UnusedBlue0,Colour).
+verify_available_piece(unusedPieces(_,_,UnusedRed1,UnusedBlue1),1,Colour) :-
+    verify_available_aux(UnusedRed1,UnusedBlue1,Colour).
+verify_available_aux(UnusedRed,_,'r'):-
     UnusedRed > 0.
-verifyAvailableAux(_,UnusedBlue,'b'):-
+verify_available_aux(_,UnusedBlue,'b'):-
     UnusedBlue > 0.
 
-removeFromUnused(unusedPieces(UnusedRed0,UnusedBlue0,UnusedRed1,UnusedBlue1),0,Colour,NewUnused) :-
-    removeUnusedAux(UnusedRed0,UnusedBlue0,Colour,NewUnusedRed,NewUnusedBlue),
+remove_from_unused(unusedPieces(UnusedRed0,UnusedBlue0,UnusedRed1,UnusedBlue1),0,Colour,NewUnused) :-
+    remove_unused_aux(UnusedRed0,UnusedBlue0,Colour,NewUnusedRed,NewUnusedBlue),
     NewUnused =.. [unusedPieces,NewUnusedRed,NewUnusedBlue,UnusedRed1,UnusedBlue1].
-removeFromUnused(unusedPieces(UnusedRed0,UnusedBlue0,UnusedRed1,UnusedBlue1),1,Colour,NewUnused) :-
-    removeUnusedAux(UnusedRed1,UnusedBlue1,Colour,NewUnusedRed,NewUnusedBlue),
+remove_from_unused(unusedPieces(UnusedRed0,UnusedBlue0,UnusedRed1,UnusedBlue1),1,Colour,NewUnused) :-
+    remove_unused_aux(UnusedRed1,UnusedBlue1,Colour,NewUnusedRed,NewUnusedBlue),
     NewUnused =.. [unusedPieces,UnusedRed0,UnusedBlue0,NewUnusedRed,NewUnusedBlue].
-removeUnusedAux(UnusedRed,UnusedBlue,'r',NewUnusedRed,UnusedBlue):-
+remove_unused_aux(UnusedRed,UnusedBlue,'r',NewUnusedRed,UnusedBlue):-
     NewUnusedRed is UnusedRed-1.
-removeUnusedAux(UnusedRed,UnusedBlue,'b',UnusedRed,NewUnusedBlue):-
+remove_unused_aux(UnusedRed,UnusedBlue,'b',UnusedRed,NewUnusedBlue):-
     NewUnusedBlue is UnusedBlue-1.
 
 
-changeTurn(0,1).
-changeTurn(1,0).
+change_turn(0,1).
+change_turn(1,0).
 
 move(gameState(Board,UnusedPieces,OutPieces,Player),target(Colour,X, Y, ColumnP, LineP),NewGameState):-
 
-    verifyAvailablePiece(UnusedPieces,Player,Colour),
+    verify_available_piece(UnusedPieces,Player,Colour),
     nth0(X,Board,Linha),
     replace_nth0(Linha,Y,' ',Colour,NewLinha),
     replace_nth0(Board,X,Linha,NewLinha,NewBoard),
-    verifyNotInVoid(ColumnP, LineP),
+    verify_not_in_void(ColumnP, LineP),
     
 
-    removeFromUnused(UnusedPieces,Player,Colour,NewUnusedPieces),
+    remove_from_unused(UnusedPieces,Player,Colour,NewUnusedPieces),
 
     %format("Point: ~p ~p ~n",[ColumnP,LineP]),
     moveDir(NewBoard,getUpPosition,getDownPosition,Colour,ColumnP,LineP,Board1),
@@ -103,7 +103,7 @@ move(gameState(Board,UnusedPieces,OutPieces,Player),target(Colour,X, Y, ColumnP,
 
     search_board(Board6,OutPieces,Board7,NewOutPieces,0,0),
 
-    changeTurn(Player,NewPlayer),
+    change_turn(Player,NewPlayer),
 
     NewGameState =.. [gameState,Board7,NewUnusedPieces,NewOutPieces,NewPlayer].
 
@@ -151,7 +151,7 @@ applyMoveDir(Board, GetDirPosFunc, _GetOposDirFunc,_,XColocado,YColocado,XEncont
     getVoidDir(GetDirPosFunc,XColocado,YColocado,XT,YT),   %obtem a célula void encontrada na direção pretendida
     movePiece(Board,ColourEncontrada,XEncontrado,YEncontrado,XT,YT,NewBoard).    %move a peça para a zona void encontrada
 getVoidDir(GetDirPosFunc,XI,YI,XV,YV):-    %obtem a célula void encontrada na direção pretendida
-    verifyNotInVoid(XI,YI), !, %ainda não chegou ao void
+    verify_not_in_void(XI,YI), !, %ainda não chegou ao void
     GetDir =.. [GetDirPosFunc,XI,YI,X1,Y1], GetDir,
     getVoidDir(GetDirPosFunc,X1,Y1,XV,YV).
 getVoidDir(_GetDirPosFunc,XI,YI,XV,YV):-    %chegou ao void
@@ -161,7 +161,7 @@ getVoidDir(_GetDirPosFunc,XI,YI,XV,YV):-    %chegou ao void
 
 %Procura a primeira peça diretamente abaixo
 checkDir(Board, _DirPosFunc, XI, YI, XO, YO, PieceO):-
-    verifyInBoard(XI,YI),
+    verify_in_board(XI,YI),
     ext_to_int(XI,YI,XX,YY),
     nth0(YY,Board,Linha),
     nth0(XX,Linha,Piece),
@@ -171,7 +171,7 @@ checkDir(Board, _DirPosFunc, XI, YI, XO, YO, PieceO):-
     YO is YI,
     !.
 checkDir(Board, DirPosFunc, XI, YI, XO, YO, PieceO):-
-    verifyInBoard(XI,YI),
+    verify_in_board(XI,YI),
     DirPos =.. [DirPosFunc,XI,YI,X,Y], DirPos,!,
     %getDownPosition(XI,YI,X,Y),
     checkDir(Board,DirPosFunc,X,Y,XO,YO,PieceO).
@@ -283,7 +283,7 @@ search_near(Board,X,Y,Colour):-
 
 
 add_to_list(Board,C,L,Colour):-
-    verifyInBoard(C,L),
+    verify_in_board(C,L),
     ext_to_int(C,L,Y,X),
     \+retract(processed([X,Y])),
     assert(processed([X,Y])),
@@ -340,7 +340,7 @@ updatePieces(outPieces(RedPointPiece,BluePointPiece,VoidPieces1,VoidPieces2),New
     Colour = 'r',
     %print([X,Y]),
     ext_to_int(C,L,Y,X),
-    verifyNotInVoid(C,L),
+    verify_not_in_void(C,L),
     Out is RedPointPiece +1,
 	NewOutPieces =.. [outPieces,Out,BluePointPiece,VoidPieces1,VoidPieces2].
 
@@ -352,7 +352,7 @@ updatePieces(outPieces(RedPointPiece,BluePointPiece,VoidPieces1,VoidPieces2),New
 updatePieces(outPieces(RedPointPiece,BluePointPiece,VoidPieces1,VoidPieces2),NewOutPieces,X,Y,Colour):-
     Colour = 'b',
     ext_to_int(C,L,Y,X),
-    verifyNotInVoid(C,L),
+    verify_not_in_void(C,L),
     Out is BluePointPiece +1,    
 	NewOutPieces =.. [outPieces,RedPointPiece,Out,VoidPieces1,VoidPieces2].
 

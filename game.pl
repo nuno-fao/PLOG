@@ -40,7 +40,7 @@ difficulty('undefined').
 %inicia o jogo e o estado de jogo mostrando depois o tabuleiro
 play :-
 	initial(GameState),
-  mainMenu,
+  main_menu,
   check_exit,
 	get_player(GameState,Player),
 	display_game(GameState,Player),
@@ -53,13 +53,13 @@ loop(GameState,Winner) :-
   Winner = -1,
 	get_player(GameState,PlayerInit),
   controller(PlayerInit,Controller),
-  getMoveFromController(GameState,Controller,Colour,Column1,Line1),
+  get_move_from_controller(GameState,Controller,Colour,Column1,Line1),
   ext_to_int(Column1, Line1, Line, Column),
   Target =.. [target,Colour,Column,Line,Column1,Line1],
   move(GameState,Target,NewGameState),
 	get_player(NewGameState,Player),
   display_game(NewGameState,Player),
-  checkForConfirm(PlayerInit,[Colour,Column1,Line1]),
+  check_for_confirm(PlayerInit,[Colour,Column1,Line1]),
   game_over(NewGameState,Winner1),
 
   !,
@@ -95,14 +95,14 @@ even(X) :- 0 is mod(X, 2).
 %devolve verdade se o parâmetro for ímpar
 odd(X) :- 1 is mod(X, 2).
 
-askForMove(Colour,Column,Line):-
+ask_for_move(Colour,Column,Line):-
   format("Which piece to Use(r or b): ",[]),
-  read(Read),clearB,
+  read(Read),clear_buffer,
   (Read == 'r';Read == 'b'),
   format("Which Column to put It: ",[]),
-  read(ColumnAux), number(ColumnAux),clearB,
+  read(ColumnAux), number(ColumnAux),clear_buffer,
   format("Which Line to put It: ",[]),
-  read(LineAux), number(LineAux), !,clearB,
+  read(LineAux), number(LineAux), !,clear_buffer,
   Colour = Read,
   Column = ColumnAux,
   Line = LineAux.
@@ -114,12 +114,12 @@ check_exit:-
   Controller1 \= 'E'.
 
 
-getMoveFromController(_,'P',Colour,Column1,Line1):-
+get_move_from_controller(_,'P',Colour,Column1,Line1):-
   !,
-  askForMove(Colour,Column1,Line1).
+  ask_for_move(Colour,Column1,Line1).
 
 
-getMoveFromController(GameState,'AI',Colour,Column1,Line1):-
+get_move_from_controller(GameState,'AI',Colour,Column1,Line1):-
   get_player(GameState,Player),
   !,
   difficulty(Level),
@@ -127,14 +127,14 @@ getMoveFromController(GameState,'AI',Colour,Column1,Line1):-
   ext_to_int(Column1,Line1,Y,X).
 
 
-checkForConfirm(Player,Move):-
+check_for_confirm(Player,Move):-
   controller(Player,C),
   C = 'AI',
   print('Computer has executed the move '),
   print(Move),
   print(', please press enter to proceed:'),
   get_char(Char).
-checkForConfirm(Player,Move):-
+check_for_confirm(Player,Move):-
   controller(Player,C),
   C = 'P',
   print('You Executed the move: '),
@@ -142,6 +142,6 @@ checkForConfirm(Player,Move):-
   print(', please press enter to proceed:'),
   get_char(Char).
 
-clearB:-
+clear_buffer:-
   get_char(Char).
 

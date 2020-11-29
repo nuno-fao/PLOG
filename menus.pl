@@ -1,34 +1,34 @@
-mainMenu :-
-    printMainMenu,
+main_menu :-
+    print_main_menu,
     retract(controller(0,_X)),
     retract(controller(1,_X1)),
     write('Insert your option: '),
-    read(Input),clearB,
-    manageGamemode(Input).
+    read(Input),clear_buffer,
+    manage_game_mode(Input).
 
-manageGamemode(1):-
+manage_game_mode(1):-
     assert(controller(0,'P')),
     assert(controller(1,'P')).
-manageGamemode(2):-
+manage_game_mode(2):-
     assert(controller(0,'P')),
     assert(controller(1,'AI')),
-    difficultyMenu.
-manageGamemode(3):-
+    difficulty_menu.
+manage_game_mode(3):-
     assert(controller(0,'AI')),
     assert(controller(1,'AI')),
-    difficultyMenu.
-manageGamemode(0) :-
+    difficulty_menu.
+manage_game_mode(0) :-
     assert(controller(0,'E')),
     assert(controller(1,'E')),
     write('\nExiting...\n\n').
-manageGamemode(Number) :-
+manage_game_mode(Number) :-
     (\+ number(Number); Number<0 ; Number>3),
     write('Invalid option!\n\n'), 
-    read(Input),clearB,
-    manageGamemode(Input).
+    read(Input),clear_buffer,
+    manage_game_mode(Input).
 
 
-printMainMenu :-
+print_main_menu :-
     nl,
     write(' _______________________________________________________________________ '),nl,
     write('|                                                                       |'),nl,
@@ -49,14 +49,14 @@ printMainMenu :-
     write(' _______________________________________________________________________ '),nl,nl.
 
 
-difficultyMenu :-
-    printDifficulty,
+difficulty_menu :-
+    print_difficulty,
     retract(difficulty(_Difficulty)),
     write('Insert your option: '),
-    read(InputD),clearB,
-    manageDifficulty(InputD).
+    read(InputD),clear_buffer,
+    manage_difficulty(InputD).
 
-printDifficulty :-
+print_difficulty :-
     nl,
     write(' _______________________________________________________________________ '),nl,
     write('|                                                                       |'),nl,
@@ -68,12 +68,12 @@ printDifficulty :-
     write('|                                                                       |'),nl,
     write(' _______________________________________________________________________ '),nl,nl.
 
-manageDifficulty(1):-
+manage_difficulty(1):-
     assert(difficulty('easy')).
-manageDifficulty(2):-
+manage_difficulty(2):-
     assert(difficulty('hard')).
-manageDifficulty(_):-
+manage_difficulty(_):-
     (\+ number(Number); Number<1 ; Number>2),
      write('Invalid option!\n\n'), 
-    read(Input),clearB,
-    manageDifficulty(Input).
+    read(Input),clear_buffer,
+    manage_difficulty(Input).
