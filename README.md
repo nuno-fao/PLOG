@@ -2,13 +2,13 @@
 
 ## Jogo: Gauss
 
-| Name                          | Turma     | Number    | E-Mail               |
+| Name                          | Turma     | Numero    | E-Mail               |
 | ----------------------------- | --------- | --------- | -------------------- |
 | Luís Miguel Afonso Pinto      |     2     | 201806206 | up201806206@fe.up.pt |
 | Nuno Filipe Amaral Oliveira   |     2     | 201806525 | up201806525@fe.up.pt |
 
 ## Instalação e execução
-Para além da instalação do SICStus Prolog 4.6 não é preciso instalar mais nada. Tendo os ficheiros todos com o código fonte é apenas necessário abrir o sicstus pela linha de comandos (sistemas UNIX) ou usando a GUI (sistemas Windows) e consultar o ficheiro 'game.pl' que consulta os restantes ficheiros necessários automaticamente. 
+Para além da instalação do SICStus Prolog 4.6 não é preciso instalar mais nada. Tendo os ficheiros todos com o código fonte é apenas necessário abrir o sicstus pela linha de comandos (sistemas UNIX) ou usando a GUI (sistemas Windows) e consultar o ficheiro 'game.pl' que consulta os restantes ficheiros necessários automaticamente. Para correr o jogo basta chamar o predicado play.
 
 ## Descrição do Jogo
 O tabuleiro do jogo é hexagonal consistindo de 36 células também elas hexagonais:
@@ -20,7 +20,7 @@ Cada jogador dispõe também duma zona de bónus, outra de risco para onde vão 
 
 Se após uma jogada houver 4 ou mais peças adjacentes da mesma cor, o jogador dessa cor tem de as recolher e colocar numa das duas zonas, se a peça estiver num espaço void vai para a zona de risco e caso contrário vai para a zona de bónus. 
 
-Quando não houver mais peças para jogar o jogo acaba e as que ficaram no tabuleiro permanecem lá dado que vão ser importantes para calcular as pontuações finais. 
+Quando não houver mais peças para jogar o jogo acaba e as peças que ficaram no tabuleiro permanecem lá dado que vão ser importantes para calcular as pontuações finais. 
 
 As pontuações são calculadas da seguinte maneira:
 - Cada peça na zona bónus vale 1 ponto.
@@ -50,7 +50,7 @@ Rulebook: https://nestorgames.com/rulebooks/GAUSS_EN.pdf
 
 - A dificuldade é obtida com o predicado difficulty que inicialmente tem um valor que não é util mas que é atualizado pelo predicado de escolha de dificuldade. O controlador de cada player (humano ou AI) é utilizado de forma semelhante à diculdade, tendo inicialmente um valor inutil para depois ser atualizado pelo menu de escolha de modo de jogo. Desta maneira podemos usar o mesmo loop para os vários modos de jogo e dificuldades.
 
-- Internamente no tabuleiro ' ', 'r' e 'b' representam vazio, peça vermelha e peça azul, respetivamente. 
+- Internamente no tabuleiro '&nbsp;&nbsp;', 'r' e 'b' representam vazio, peça vermelha e peça azul, respetivamente. 
 
 -  O tabuleiro, peças por jogar e peças na zonas de  recolha serão iniciados assim: 
 >![estado inicial](./img/estado_inicial.png)
@@ -63,6 +63,12 @@ Rulebook: https://nestorgames.com/rulebooks/GAUSS_EN.pdf
 >![tabuleiro final](./img/estado_final.png)
 
 ### Visualização do Estado de Jogo
+
+Ao executar play, é encontrado um menu inicial que mostra os vários modos e pede ao utilizador que escolha entre eles. Se o modo escolhido tiver envolver que o computador controle um dos jogadores, aparecerá outro menu ainda a perguntar a dificuldade do AI.
+
+>Imagem Do Menu 1
+>Imagem Do Menu 2
+
 O predicado responsável pela visualização do estado de jogo a cada instante recebe o tabuleiro, peças por jogar, peças recolhidas, o turno e um elemento extra que começa em 1 e vai sendo iterado para saber qual a fila a desenhar dado que desenhar um tabuleiro com espaços hexagonais com elementos ASCII é relativamente complexo. A cada fila remove-se a HEAD da cópia da lista do tabuleiro para se desenhar os valores certos no tabuleiro. 
 
 Acima do tabuleiro será indicado o número de peças que cada jogador ainda dispõe para jogar. Para além disso, no meio dessa informação será escrito quem é a próxima jogada. 
@@ -75,15 +81,21 @@ O output deste predicado num estado inicial, intermédio e final seria respetiva
 >![output intermédio](./img/output_int.png)
 >![output final](./img/output_final.png)
 
+Relativamente à interação com o utilizador esta não é muita visto que só existe para pedir uma jogada ao utilizador quando for relevante e para confirmar as jogadas tanto dele como do computador. 
+>Imagem de confirmações
+
+Quanto ao input duma jogada, é primeiro pedido a cor da peça a jogar, que tem de ser obrigatoriamente 'r' ou 'b'. Depois é pedido o numero da coluna onde pretende colocar a peça seguido da linha, a contar de cima, dessa coluna onde o quer fazer. Em cada coluna as linhas começam-se a contar a partir do 1.
+>Imagem de Input
+
 ### Lista de Jogadas Válidas
-A listagem das jogadas válidas é obtida usando o predicado valid_moves(+GameState, +Player, -ListOfMoves) recebendo um GameState e o Player para o qual deve listar as jogadas válidas unificando-as com ListOfMoves. Recorrendo um predicado ao auxiliar check_line([H|T], Row, List) que recursivamente percorre todas as células do board vai-se obter em List todas as células do tabuleiro que estão desocupadas nem estão numa zona void. De seguida, com a lista obtida vai-se criar outras duas que contêm as mesmas jogadas mas com as cores das peças adicionadas se tiverem disponiveis. Se uma cor não estiver disponível os predicados check_for_red/4 e check_for_blue/4 constroem uma lista vazia. No fim o ListOfMoves será o append das duas listas obtidas. Um extra que decidimos colocar foi dar random sort da lista final por causa do AI que, como vai ser explicado na secção "Jogada do Computador", escolha a jogada com base na pontuação e se houvesse várias com a mesma pontuação, escolhia sempre a primeira. Desta maneira, evitamos esse problema.
+A listagem das jogadas válidas é obtida usando o predicado valid_moves(+GameState, +Player, -ListOfMoves) recebendo um GameState e o Player para o qual deve listar as jogadas válidas unificando-as com ListOfMoves. Recorrendo um predicado ao auxiliar check_line([H|T], Row, List) que recursivamente percorre todas as células do board vai-se obter em List todas as células do tabuleiro que estão desocupadas e fora da zona void. De seguida, com a lista obtida vai-se criar outras duas que contêm as mesmas jogadas mas com as cores das peças adicionadas se tiverem disponiveis. Se uma cor não estiver disponível os predicados checkForRed/4 e checkForBlue/4 constroem uma lista vazia. No fim o ListOfMoves será o append das duas listas obtidas. Um extra que decidimos colocar foi dar random sort da lista final por causa do AI que, como vai ser explicado na secção "Jogada do Computador", escolhe a jogada com base no valor do tabuleiro e se houvesse várias com a mesma pontuação, escolheria sempre a primeira. Desta maneira, evitamos esse problema.
  
 ### Execução de Jogadas
-A uma jogada é validade e executada maioritariamente pelo predicado move(+GameState,+Move,-NewGameState) mas depende de várias coisas até isso acontecer. Primeiramente, no loop principal é identificado o controlador do jogador que tem a vez. Se for humano, pede a cor, coluna e linhas em que o jogador deseja colocar a peça, fazendo uma verificação muito básica do que recebe. Se não for humano obtem a jogada como é explicado na seccção "Jogada do Computador". 
+A uma jogada é validada e executada maioritariamente pelo predicado move(+GameState,+Move,-NewGameState). Primeiramente, no loop principal é identificado o controlador do jogador (humano ou computador) que tem a vez e é lhe pedido o input.
 
-Obtida a jogada, esta é passada ao predicado move, juntamente com o GameState para que este a valide e execute. Primeiramente, verifica se o jogador em questão ainda tem peças da cor que pretende jogar recorrendo ao predicado verify_available_piece(UnusedPieces,Player,Colour). Se tal se confirmar, testa se a célula escolhida está realmente vazia, coloca lá a peça, devolve um board atualizado e utilizando remove_from_unused(UnusedPieces,Player,Colour,NewUnusedPieces) obtem um UnusedPieces atualizado em NewUnusedPieces. 
+Obtida a jogada, esta é passada ao predicado move, juntamente com o GameState para que este a valide e execute. De seguida, verifica se o jogador em questão ainda tem peças da cor que pretende jogar recorrendo ao predicado verifyAvailablePiece(UnusedPieces,Player,Colour). Se tal se confirmar, testa se a célula escolhida está realmente vazia, coloca lá a peça, devolve um board atualizado e utilizando removeFromUnused(UnusedPieces,Player,Colour,NewUnusedPieces) obtem um UnusedPieces atualizado em NewUnusedPieces. 
 
-A primeira coisa a fazer após a peça ser colocada será então percorrer o tabuleiro em cada uma das seis direções a partir da célula recentemente ocupada até encontrar uma outra peça para atraí-la ou afastá-la da peça colocada se tiverem cores diferentes ou iguais, respetivamente. Isto é feito recorrendo ao predicado moveDir(Board, GetDirPosFunc, GetOposDirFunc, Color, XI, YI, NewBoard) que precisa de receber muitos elementos para que não seja necessário criar um predicado diferente para cada direção:
+A primeira coisa a fazer após a peça ser colocada será então percorrer o tabuleiro em cada uma das seis direções a partir da célula recentemente ocupada até encontrar uma outra peça para atraí-la ou afastá-la dependendo da sua cor. Isto é feito recorrendo ao predicado moveDir(Board, GetDirPosFunc, GetOposDirFunc, Color, XI, YI, NewBoard) que precisa de receber muitos elementos para que não seja necessário criar um predicado diferente para cada direção:
  - Board - tabuleiro a pesquisar
  - GetDirPosFunc - o nome do predicado que, a partir de uma posição, obtém a próxima posição na direção desejada
  - GetOposDirFunc - o nome do predicado que, a partir de uma posição, obtém a próxima posição na direção oposta à desejada
@@ -91,25 +103,26 @@ A primeira coisa a fazer após a peça ser colocada será então percorrer o tab
  - XI e YI -  coordenadas da célula onde foi colocada a peça
  - NewBoard que vai conter o tabuleiro resultante
 
-Este moveDir recorre também a alguns predicados auxiliares como checkDir, applyMoveDir, getVoidDir e movePiece. Inicialmente moveDir a partir da posição que recebe, obtém a proxima posição na direção em GetDirPosFunc e usa checkDir que procura por uma peça também nessa direção. Se checkDir encontrar uma peça, a posição da mesma é retornada nos elementos XO e YO e a cor da mesma em PieceO, se não encontrar, significa que não é necessário mover peça nenhuma pelo que o predicado falha e moveDir limita-se a copiar o Board para o NewBoard. No entanto, se realmente encontrar uma peça, o applyMoveDir é responsável por identificar o que tem que fazer tendo em conta as cores das peças e usar movePiece (move a peça duma célula para outra) para efetuar a jogada.
+Este moveDir recorre também a alguns predicados auxiliares como checkDir, applyMoveDir, getVoidDir e movePiece. Inicialmente, moveDir, a partir da posição que recebe, obtém a proxima posição na direção em GetDirPosFunc e usa checkDir para procurar pela peça mais próxima também nessa direção. Se checkDir encontrar uma peça, a posição da mesma é retornada nos elementos XO e YO e a cor em PieceO. Se não encontrar, significa que não é necessário mover peça nenhuma pelo que o predicado falha e moveDir limita-se a copiar o Board para o NewBoard. No entanto, se realmente encontrar uma peça, o applyMoveDir é responsável por identificar o que tem que fazer tendo em conta as cores das peças (afastar/atrair) e usar movePiece (move a peça duma célula para outra) para mover a peça duma célula para outra.
 
-Tendo isto tudo feito em cada uma das 6 direções falta verificar se há 4 ou mais peças adjacentes da mesma cor para serem removidas da área de jogo para as zonas corretas.
+Tendo isto tudo feito em cada uma das 6 direções falta verificar se há 4 ou mais peças adjacentes da mesma cor para que sejam removidas da área de jogo para as devidas zonas. Para tal vamos usar o predicado search_board que percorre o tabuleiro até encontrar uma peça. Depois de encontrada, o search_near recursivamente (search_near chama add_to_list e add_to_list chama search_near) pesquisa as 6 células adjacentes que contenham uma peça da mesma cor e guarda-as na base de dados. Feito isto, com o setof obtêm-se uma lista com todas as células guardadas e se tiver um tamanho maior do que 4, são todas removidas do tabuleiro no predicado removePieces. No fim, o search board procura novamente por outra peça e repete o processo até chegar ao fim do tabuleiro.
 
-Agora só falta mudar o turno do jogador com change_turn/2 e criar um novo GameState com as informações todas atualizadas.
+Finalmente, só falta mudar o turno do jogador com change_turn/2 e criar um novo GameState com as informações todas atualizadas.
 
 ### Final do Jogo
-Ainda que este jogo em particular tenha sempre 30 jogadas, o final do jogo é testado a cada jogada usando o predicado game_over(+GameState, -Winner) que vê se ainda existem peças por jogar ou não. Se o jogo tiver realmente terminado, ainda no predicado game_over, usando get_number_void é obtido o número de peças nas zonas void que cada jogador para se passar ao cálculo efetivo das pontuações (como explicado na descrição do jogo) e vencedor com get_points e get_winner, respetivamente.
+Ainda que este jogo em particular tenha sempre 30 jogadas, o final do jogo é testado a cada jogada usando o predicado game_over(+GameState, -Winner) que vê se ainda existem peças por jogar ou não. Se o jogo tiver realmente terminado, ainda no predicado game_over, usando get_number_void é obtido o número de peças nas zonas void que cada jogador tem para se passar ao cálculo efetivo das pontuações (como explicado na descrição do jogo) e obter o vencedor com get_points e get_winner, respetivamente.
 
 ### Avaliação do Tabuleiro
-Dado um estado de jogo, o predicado ​value(+GameState, +Player, -Value) determina o valor dele da mesma maneira que o predicado de final de jogo o faz. A diferença é que nesta não obtemos um vencedor com as pontuações obtidas, em vez disso, unificamos value com a diferença das pontuações entre o do Player em questão e o outro.
+Dado um estado de jogo, o predicado ​value(+GameState, +Player, -Value) determina o valor dele da mesma maneira que o predicado de final de jogo o faz. A diferença é que nesta não obtemos um vencedor com as pontuações obtidas, em vez disso, unificamos Value com a diferença das pontuações entre o Player em questão e o outro.
 
 ### Jogada do Computador
 O predicado choose_move(+GameState, +Player, +Level, -Move) é responsável por escolher a jogada do computador conforme a dificuldade do AI que é passado em Level (easy ou hard). 
 
 Se a dificuldade for easy implica que cada jogada será obtida de forma aleatória. Assim primeiro é necessário obter a listagem de jogadas válidas usando valid_moves e recorrendo ao predicado random_member da biblioteca random escolhe-se uma dessas jogadas para se efetuar.
 
-No entanto, se dificuldade for hard. blá blá blá.
-Um problema que tinhamos inicialmente com esta dificuldade foi o facto de caso houvesse jogadas com a mesma pontuação, escolhia sempre a primeira na lista o que tornaria os jogos muito repetitivos (principalmente no modo Computer vs Computer onde os jogos seriam literalmente sempre iguais). Para circundar esta situação decidimos dar random sort na listagem das jogadas válidas. Assim garante uma certa aleatoriedade relativamente à jogada escolhida ainda que seja sempre uma das que tem maior pontuação.
+No entanto, se dificuldade for hard, são obtidas e aplicadas todas as jogadas válidas ao GameState atual para ter todos os GameStates possíveis usando getStates. Depois com o predicado getMaxSons itera-se por todos os GameStates recolhidos à procura do que tem mais valor para o player em questão e é esse que será no fim escolhido como jogada.
+
+Um problema que tinhamos inicialmente com esta dificuldade foi o facto de, caso houvesse jogadas com a mesma pontuação, escolhia sempre a primeira na lista o que tornaria os jogos muito repetitivos (principalmente no modo Computer vs Computer onde os jogos seriam literalmente sempre iguais). Para circundar esta situação decidimos dar random sort na listagem das jogadas válidas. Desta maneiras garantimos uma certa aleatoriedade relativamente à jogada escolhida ainda que seja sempre uma das que tem maior pontuação.
 
 ## Conclusão
 Devido à estrutura hexagonal do tabuleiro e às mecanicas do jogo tivemos algumas dificuldades nos aspetos de manipulação do board como, por exemplo, a percorrer o mesmo. O que ainda dificultou mais o processo inicialmente foi o facto de as coordenadas duma célula que o jogador vê são completamente diferentes das coordenadas internas do tabuleiro pelo que tivemos mapear posições internas para externas no board_map.pl e trabalhar constantemente com as 2 posições.
