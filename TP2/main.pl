@@ -20,8 +20,8 @@ problem(2,
     [	[_,_],
 	[_,_]],
 	
-    [	[4,4],
-	[0,0]]		
+    [	[2,4],
+	[1,0]]		
 		).
 		
 tan_and_white(Blank,Dir):-
@@ -59,11 +59,11 @@ setC(Blank,Dir,1,P,S,SO,Tan):-
 	X is P mod 2,
 	Y is div(P,2),
 	setC(Blank,Dir,1,X,Y,S,SO,Tan).
-setC(_,_,1,5,_,S,S,_).
+setC(_,_,1,2,_,S,S,_).
 setC(_,_,1,_,-1,S,S,_).
 setC(Blank,Dir,1,X,Y,S,SO,Tan):-
-	write(-X-Y),
-	write('\n'),
+	X <2,
+	Y>=0,
 	X>=0,
 	Y>=0,
 	P1 is Y * 2,
@@ -74,8 +74,8 @@ setC(Blank,Dir,1,X,Y,S,SO,Tan):-
 	Y1 is Y - 1,
 	setC(Blank,Dir,1,X1,Y1,S,SO,Tan).
 setC(Blank,Dir,1,X,Y,S,SO,Tan):-
-	write(X-Y),
-	write('\n'),
+	X<2,
+	Y>=0,
 	X>=0,
 	Y>=0,
 	P1 is Y * 2,
@@ -89,29 +89,34 @@ setC(Blank,Dir,1,X,Y,S,SO,Tan):-
 	
 %right
 setC(Blank,Dir,2,P,S,SO,Tan):-
-	Out is P mod 2,
-	Out < 2,
-	write(Out),
 	P>=0,
 	P1 is P + 1,
 	Out is div(P,2),
 	Out1 is div(P1,2),
+	write(Out-Out1),
+	write('\n'),
 	Out = Out1,
 	nth0(P,Blank,Piece),
 	Piece \= Tan,
 	setC(Blank,Dir,2,P1,S,SO,Tan).
 setC(Blank,Dir,2,P,S,SO,Tan):-
-	write(Out),
 	P>=0,
 	P1 is P + 1,
 	Out is div(P,2),
 	Out1 is div(P1,2),
+	write(Out-Out1),
+	write('\n'),
 	Out = Out1,
 	nth0(P,Blank,Piece),
 	Piece = Tan,
 	S1 is S+1,
 	setC(Blank,Dir,2,P1,S1,SO,Tan).
-setC(_,_,2,P,S,S,_).
+setC(Blank,Dir,2,P,S,SO,Tan):-
+	P>=0,
+	nth0(P,Blank,Piece),
+	Piece = Tan,
+	SO is S + 1.
+setC(_,_,2,P,S,S,_):- write(S),write('\n').
 	
 	
 	
