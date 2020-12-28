@@ -45,6 +45,22 @@ problem(4,
 	[2,6]]		
 		).
 
+problem(5,
+	[[_,_,_,_,_],
+	 [_,_,_,_,_],
+	 [_,_,_,_,_],
+	 [_,_,_,_,_],
+	 [_,_,_,_,_]
+ 	],
+	[[4,4,5,6,6],
+	 [2,2,3,4,6],
+	 [1,0,7,6,0],
+	 [1,1,0,0,6],
+	 [0,1,0,7,0]
+	]
+
+).
+
 length_(Length, List) :- length(List, Length).
 
 list2matrix(List, RowSize, Matrix) :-
@@ -67,14 +83,20 @@ tan_and_white(Blank,Dir):-
 	
 	list2matrix(BlankS,C,Matrix),
 
+	statistics(total_runtime, _),
 	tan_and_white(Matrix,Dir,0,0,Size,C,L).
 
+print_time(Msg):-statistics(total_runtime,[_,T]),TS is ((T//10)*10)/1000, nl,write(Msg), write(TS), write('s'), nl, nl.
 
 
 tan_and_white(Blank,Dir,X,Y,Size,Col,Line):- 
-	X>=Col.
+	X>=Col,
+	print_time(Time: ’),
+	fd_statistics,statistics.
 tan_and_white(Blank,Dir,X,Y,Size,Col,Line):- 
-	Y>=Line.
+	Y>=Line,
+	print_time(Time: ’),
+	fd_statistics,statistics.
 tan_and_white(Blank,Dir,X,Y,Size,Col,Line):-
 	nth0(Y,Blank,BlankR),
 	nth0(X,BlankR,B),
@@ -93,17 +115,22 @@ tan_and_white(Blank,Dir,X,Y,Size,Col,Line):-
 	tan_and_white(Blank,Dir,X1,Y1,Size,Col,Line).
 
 get_list(Tan,Dir,Blank,X,Y,Cols,Lines,Lista):-
-	Tan #= 0,
-	get_list(Dir,Blank,X,Y,Cols,Lines,Lista),
-	length(Lista,LL),
-	S #= LL - 2,
-	global_cardinality(Lista,[0-2,1-S]).
-get_list(Tan,Dir,Blank,X,Y,Cols,Lines,Lista):-
 	Tan #= 1,
 	get_list(Dir,Blank,X,Y,Cols,Lines,Lista),
 	length(Lista,LL),
 	S #= LL - 3,
+	write(Blank),
+	nl,
 	global_cardinality(Lista,[0-S,1-3]).
+
+get_list(Tan,Dir,Blank,X,Y,Cols,Lines,Lista):-
+	Tan #= 0,
+	get_list(Dir,Blank,X,Y,Cols,Lines,Lista),
+	length(Lista,LL),
+	S #= LL - 2,
+	write(Blank),
+	nl,
+	global_cardinality(Lista,[0-2,1-S]).
 
 
 get_list(0,Blank,X,Y,Cols,Lines,Lista):-
@@ -218,6 +245,7 @@ get_list(7,Blank,X,Y,Cols,Lines,Lista):-
 %problem(1,A,B),tan_and_white(A,B).
 %problem(3,A,B),tan_and_white(A,B).
 %problem(4,A,B),tan_and_white(A,B).
+%problem(5,A,B),tan_and_white(A,B).
 
 
 
