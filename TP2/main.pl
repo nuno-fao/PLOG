@@ -1,296 +1,314 @@
 :- use_module(library(clpfd)).
 :- use_module(library(lists)).     
-            
-problem(1,
+:- use_module(library(random)).
+            	
+%imprime a solução para dir formatada
+%solver(+Dir)
+solver(Dir):-
+	tan_and_white(Dir,Solution),
+	print_matrix(Dir),nl,
+	print_matrix(Solution),nl.
 
-    [	[_,_,_,_],
-	[_,_,_,_],
-	[_,_,_,_],
-	[_,_,_,_]],
-	
-    [[4,4,5,6],
-	[3,3,5,6],
-	[2,1,6,7],
-	[0,2,7,0]]		
-		).
-		
-		
-problem(2,
-
-    [	[_,_],
-	[_,_]],
-	
-    [	[4,5],
-	[1,7]]		
-		).
-		
-problem(3,
-
-    [	[_,_,_,_],
-	[_,_,_,_]],
-	
-    [	[4,4,4,4],
-	[0,0,0,0]]		
-		).
-
-
-problem(4,
-
-    [	[_,_],
-	[_,_],
-	[_,_]],
-	
-    [	[3,5],
-	[1,7],
-	[2,6]]		
-		).
-
-tan_and_white(Blank,Dir):-
-	append(Blank,BlankS),
-	append(Dir,DirS),
-	length(DirS,SD),
-	length(BlankS,SB),
-	SD = SB,
+%devolve em solution a solução para dir
+%tan_and_white(+Dir,-Solution)
+tan_and_white(Dir,Solution):-
+	length(Dir,SizeD),
+	matrix_generator(SizeD,SizeD,Blank),
+	domain_to_list(Blank,0,1),
 	length(Blank,L),
 	nth0(0,Blank,Linha),
 	length(Linha,C),
-	domain(BlankS,0,1),
-	tan_and_white(BlankS,DirS,0,SD,C,L).
-tan_and_white(Blank,Dir,P,Size,Col,Line):-	
-	S #= 2+Tan,
-	nth0(P,Dir,Direction),
-	nth0(P,Blank,Tan),
-	setC(Blank,Dir,Direction,P,0,S,Tan,Size,Col,Line),
-	P1 is P +1,
-	!,
-	tan_and_white(Blank,Dir,P1,Size,Col,Line).
-tan_and_white(Blank,Dir,P,Size,Col,Line):- 
-	P>=Size.
+	statistics(total_runtime, _),
+	tan_and_white(Blank,Dir,0,0,SizeD,C,L,Solution).
 
-	
-%up up
-setC(_,_,0,P,S,S1,_,_,_,_):-	P<0,S1 is S.
-setC(Blank,Dir,0,P,S,SO,Tan,Size,Col,Line):-
-	P>=0,
-	nth0(P,Blank,Piece),
-	Piece \= Tan,
-	P1 is P - Col,
-	setC(Blank,Dir,0,P1,S,SO,Tan,Size,Col,Line).
-setC(Blank,Dir,0,P,S,SO,Tan,Size,Col,Line):-
-	P>=0,
-	nth0(P,Blank,Piece),
-	Piece = Tan,
-	S1 is S+1,
-	P1 is P - Col,
-	setC(Blank,Dir,0,P1,S1,SO,Tan,Size,Col,Line).
-	
-%up right
-setC(Blank,Dir,1,P,S,SO,Tan,Size,Col,Line):-
-	X is P mod Col,
-	Y is div(P,Col),
-	setC(Blank,Dir,1,X,Y,S,SO,Tan,Size,Col,Line).
-setC(_,_,1,X,_,S,S,_,Size,X,Line).
-setC(_,_,1,_,-1,S,S,_,Size,Col,Line).
-setC(Blank,Dir,1,X,Y,S,SO,Tan,Size,Col,Line):-
-	X <Col,
-	X>=0,
-	Y>=0,
-	P1 is Y * Col,
-	P2 is P1 + X,
-	nth0(P2,Blank,Piece),
-	Piece \= Tan,
-	X1 is X + 1,
+print_time(Msg):-statistics(total_runtime,[_,T]),TS is ((T//10)*10)/1000, nl,write(Msg), write(TS), write('s'), nl, nl.
+
+
+%devolve em no ultimo parametro a solução de dir, verifica se a procura acabou 
+%tan_and_white(+Blank,+_Dir,+X,+Y,+_Size,+Col,+Line,-Blank)
+tan_and_white(Blank,_Dir,X,Y,_Size,Col,Line,Blank):- 
+	(X>=Col; Y>=Line),
+	print_time("Time: "),
+	fd_statistics,statistics,
+	write(Blank).
+
+%devolve em O a solução para Dir, pesquisa em torno da dir na posição (x,y)
+%tan_and_white(+Blank,+Dir,+X,+Y,+_Size,+Col,+Line,-O)
+tan_and_white(Blank,Dir,X,Y,Size,Col,Line,O):-
+	nth0(Y,Blank,BlankR),
+	nth0(X,BlankR,B),
+
+	nth0(Y,Dir,DirR),
+	nth0(X,DirR,D),
+	apply_restriction(B,D,Blank,X,Y,Col,Line),
+
+	P is Y * Col,
+	P1 is P + X,
+	P2 is P1 + 1,
+	X1 is P2 mod Col,
+	Y1 is div(P2,Col), 
+
+	tan_and_white(Blank,Dir,X1,Y1,Size,Col,Line,O).
+
+%aplica restricoes a Blank, força a que na lista obtida, o numero de setas esteja correto
+%apply_restriction(+Tan,+Dir,+Blank,+X,+Y,+Cols,-Lines)
+apply_restriction(Tan,Dir,Blank,X,Y,Cols,Lines):-
+	Tan #= 1,
+	get_list(Dir,Blank,X,Y,Cols,Lines,Lista),
+	length(Lista,LL),
+	S #= LL - 3,
+	global_cardinality(Lista,[0-S,1-3]).
+
+%aplica restricoes a Blank, força a que na lista obtida, o numero de setas esteja correto
+%apply_restriction(+Tan,+Dir,+Blank,+X,+Y,+Cols,-Lines)
+apply_restriction(Tan,Dir,Blank,X,Y,Cols,Lines):-
+	Tan #= 0,
+	get_list(Dir,Blank,X,Y,Cols,Lines,Lista),
+	length(Lista,LL),
+	S #= LL - 2,
+	global_cardinality(Lista,[0-2,1-S]).
+
+
+%verifica os elementos na direção da seta dir, na posição (X,Y)
+%get_list(+Dir,+Blank,+X,+Y,+Cols,+Lines,-Lista)
+get_list(0,_Blank,_X,Y,_Cols,_Lines,Lista):-
+	Y<0,
+	Lista = [].
+get_list(0,Blank,X,Y,Cols,Lines,Lista):-
+	Y >= 0,
 	Y1 is Y - 1,
-	setC(Blank,Dir,1,X1,Y1,S,SO,Tan,Size,Col,Line).
-setC(Blank,Dir,1,X,Y,S,SO,Tan,Size,Col,Line):-
-	X<Col,
-	X>=0,
-	Y>=0,
-	P1 is Y * Col,
-	P2 is P1 + X,
-	nth0(P2,Blank,Piece),
-	Piece = Tan,
-	S1 is S +1,
-	X1 is X + 1,
+	get_list(0,Blank,X,Y1,Cols,Lines,OutLista),
+	nth0(Y,Blank,Row),
+	nth0(X,Row,Elem),
+	Lista = [Elem|OutLista]. 
+
+get_list(1,_Blank,_X,Y,_Cols,_Lines,Lista):-
+	Y<0,
+	Lista = [].
+get_list(1,_Blank,X,_Y,Cols,_Lines,Lista):-
+	X>=Cols,
+	Lista = [].
+get_list(1,Blank,X,Y,Cols,Lines,Lista):-
+	Y >= 0,
+	X < Cols,
 	Y1 is Y - 1,
-	setC(Blank,Dir,1,X1,Y1,S1,SO,Tan,Size,Col,Line).
-	
-%right
-setC(Blank,Dir,2,P,S,SO,Tan,Size,Col,Line):-
-	P>=0,
-	P1 is P + 1,
-	Out is div(P,Col),
-	Out1 is div(P1,Col),
-	Out = Out1,
-	nth0(P,Blank,Piece),
-	Piece \= Tan,
-	setC(Blank,Dir,2,P1,S,SO,Tan,Size,Col,Line).
-setC(Blank,Dir,2,P,S,SO,Tan,Size,Col,Line):-
-	P>=0,
-	P1 is P + 1,
-	Out is div(P,Col),
-	Out1 is div(P1,Col),
-	Out = Out1,
-	nth0(P,Blank,Piece),
-	Piece = Tan,
-	S1 is S+1,
-	setC(Blank,Dir,2,P1,S1,SO,Tan,Size,Col,Line).
-setC(Blank,Dir,2,P,S,SO,Tan,Size,Col,Line):-
-	P>=0,
-	nth0(P,Blank,Piece),
-	Piece = Tan,
-	SO is S + 1.
-setC(_,_,2,P,S,S,_,Size,Col,Line):- write(S),write('\n').
-
-%down right
-setC(Blank,Dir,3,P,S,SO,Tan,Size,Col,Line):-
-	X is P mod Col,
-	Y is div(P,Col),
-	setC(Blank,Dir,3,X,Y,S,SO,Tan,Size,Col,Line).
-setC(_,_,3,X,_,S,S,_,Size,X,Line).
-setC(_,_,3,_,Y,S,S,_,Size,Col,Y).
-setC(Blank,Dir,3,X,Y,S,SO,Tan,Size,Col,Line):-
-	X <Col,
-	Y<Line,
-	X>=0,
-	Y>=0,
-	P1 is Y * Col,
-	P2 is P1 + X,
-	nth0(P2,Blank,Piece),
-	Piece \= Tan,
 	X1 is X + 1,
-	Y1 is Y + 1,
-	setC(Blank,Dir,3,X1,Y1,S,SO,Tan,Size,Col,Line).
-setC(Blank,Dir,3,X,Y,S,SO,Tan,Size,Col,Line):-
-	X<Col,
-	Y<Line,
-	X>=0,
-	Y>=0,
-	P1 is Y * Col,
-	P2 is P1 + X,
-	nth0(P2,Blank,Piece),
-	Piece = Tan,
-	S1 is S +1,
+	get_list(1,Blank,X1,Y1,Cols,Lines,OutLista),
+	nth0(Y,Blank,Row),
+	nth0(X,Row,Elem),
+	Lista = [Elem|OutLista]. 
+
+get_list(2,_Blank,X,_Y,Cols,_Lines,Lista):-
+	X>=Cols,
+	Lista = [].
+get_list(2,Blank,X,Y,Cols,Lines,Lista):-
+	X < Cols,
 	X1 is X + 1,
-	Y1 is Y + 1,
-	setC(Blank,Dir,3,X1,Y1,S1,SO,Tan,Size,Col,Line).
-	
-	
-%down down
-setC(_,_,4,P,S,S1,_,Size,_,_):-	P>=Size,S1 is S.
-setC(Blank,Dir,4,P,S,SO,Tan,Size,Col,Line):-
-	write(1),
-	P<Size,
-	nth0(P,Blank,Piece),
-	Piece \= Tan,
-	P1 is P + Col,
-	setC(Blank,Dir,4,P1,S,SA,Tan,Size,Col,Line),
-	SO is SA.
-setC(Blank,Dir,4,P,S,SO,Tan,Size,Col,Line):-
-	write(2),
-	P<Size,
-	nth0(P,Blank,Piece),
-	Piece == Tan,
-	S1 is S+1,
-	P1 is P + Col,
-	setC(Blank,Dir,4,P1,S1,SA,Tan,Size,Col,Line),
-	SO is SA.
-	
-%down left
-setC(Blank,Dir,5,P,S,SO,Tan,Size,Col,Line):-
-	X is P mod Col,
-	Y is div(P,Col),
-	setC(Blank,Dir,5,X,Y,S,SO,Tan,Size,Col,Line).
-setC(_,_,5,-1,_,S,S,_,Size,Col,Line).
-setC(_,_,5,_,Y,S,S,_,Size,Col,Y).
-setC(Blank,Dir,5,X,Y,S,SO,Tan,Size,Col,Line):-
-	Y<Line,
-	X>=0,
-	Y>=0,
-	P1 is Y * Col,
-	P2 is P1 + X,
-	nth0(P2,Blank,Piece),
-	Piece \= Tan,
-	X1 is X - 1,
-	Y1 is Y + 1,
-	setC(Blank,Dir,5,X1,Y1,S,SO,Tan,Size,Col,Line).
-setC(Blank,Dir,5,X,Y,S,SO,Tan,Size,Col,Line):-
-	Y<Line,
-	X>=0,
-	Y>=0,
-	P1 is Y * Col,
-	P2 is P1 + X,
-	nth0(P2,Blank,Piece),
-	Piece = Tan,
-	S1 is S +1,
-	X1 is X - 1,
-	Y1 is Y + 1,
-	setC(Blank,Dir,5,X1,Y1,S1,SO,Tan,Size,Col,Line).
+	get_list(2,Blank,X1,Y,Cols,Lines,OutLista),
+	nth0(Y,Blank,Row),
+	nth0(X,Row,Elem),
+	Lista = [Elem|OutLista].
 
-%lef
-setC(Blank,Dir,6,P,S,SO,Tan,Size,Col,Line):-
-	P>=0,
-	P1 is P - 1,
-	Out is div(P,Col),
-	Out1 is div(P1,Col),
-	Out = Out1,
-	nth0(P,Blank,Piece),
-	Piece \= Tan,
-	setC(Blank,Dir,6,P1,S,SO,Tan,Size,Col,Line).
-setC(Blank,Dir,6,P,S,SO,Tan,Size,Col,Line):-
-	P>=0,
-	P1 is P - 1,
-	Out is div(P,Col),
-	Out1 is div(P1,Col),
-	Out = Out1,
-	nth0(P,Blank,Piece),
-	Piece = Tan,
-	S1 is S+1,
-	setC(Blank,Dir,6,P1,S1,SO,Tan,Size,Col,Line).
-setC(Blank,Dir,6,P,S,SO,Tan,Size,Col,Line):-
-	P>=0,
-	nth0(P,Blank,Piece),
-	Piece = Tan,
-	SO is S + 1.
-setC(_,_,6,P,S,S,_,Size,Col,Line):- write(S),write('\n').
+get_list(3,_Blank,_X,Y,_Cols,Lines,Lista):-
+	Y>=Lines,
+	Lista = [].
+get_list(3,_Blank,X,_Y,Cols,_Lines,Lista):-
+	X>=Cols,
+	Lista = [].
+get_list(3,Blank,X,Y,Cols,Lines,Lista):-
+	Y < Lines,
+	X < Cols,
+	Y1 is Y + 1,
+	X1 is X + 1,
+	get_list(3,Blank,X1,Y1,Cols,Lines,OutLista),
+	nth0(Y,Blank,Row),
+	nth0(X,Row,Elem),
+	Lista = [Elem|OutLista]. 
 
-%up left
-setC(Blank,Dir,7,P,S,SO,Tan,Size,Col,Line):-
-	X is P mod Col,
-	Y is div(P,Col),
-	setC(Blank,Dir,7,X,Y,S,SO,Tan,Size,Col,Line).
-setC(_,_,7,-1,_,S,S,_,Size,Col,Line).
-setC(_,_,7,_,-1,S,S,_,Size,Col,Line).
-setC(Blank,Dir,7,X,Y,S,SO,Tan,Size,Col,Line):-
-	X>=0,
-	Y>=0,
-	P1 is Y * Col,
-	P2 is P1 + X,
-	nth0(P2,Blank,Piece),
-	Piece \= Tan,
+get_list(4,_Blank,_X,Y,_Cols,Lines,Lista):-
+	Y >= Lines,
+	Lista = [].
+get_list(4,Blank,X,Y,Cols,Lines,Lista):-
+	Y < Lines,
+	Y1 is Y + 1,
+	get_list(4,Blank,X,Y1,Cols,Lines,OutLista),
+	nth0(Y,Blank,Row),
+	nth0(X,Row,Elem),
+	Lista = [Elem|OutLista]. 
+
+get_list(5,_Blank,_X,Y,_Cols,Lines,Lista):-
+	Y>=Lines,
+	Lista = [].
+get_list(5,_Blank,X,_Y,_Cols,_Lines,Lista):-
+	X < 0,
+	Lista = [].
+get_list(5,Blank,X,Y,Cols,Lines,Lista):-
+	Y < Lines,
+	X >= 0,
+	Y1 is Y + 1,
 	X1 is X - 1,
+	get_list(5,Blank,X1,Y1,Cols,Lines,OutLista),
+	nth0(Y,Blank,Row),
+	nth0(X,Row,Elem),
+	Lista = [Elem|OutLista]. 
+
+get_list(6,_Blank,X,_Y,_Cols,_Lines,Lista):-
+	X < 0,
+	Lista = [].
+get_list(6,Blank,X,Y,Cols,Lines,Lista):-
+	X >= 0,
+	X1 is X - 1,
+	get_list(6,Blank,X1,Y,Cols,Lines,OutLista),
+	nth0(Y,Blank,Row),
+	nth0(X,Row,Elem),
+	Lista = [Elem|OutLista].
+
+get_list(7,_Blank,X,_Y,_Cols,_Lines,Lista):-
+	X < 0,
+	Lista = [].
+get_list(7,_Blank,_X,Y,_Cols,_Lines,Lista):-
+	Y < 0,
+	Lista = [].
+get_list(7,Blank,X,Y,Cols,Lines,Lista):-
+	Y >= 0,
+	X >= 0,
 	Y1 is Y - 1,
-	setC(Blank,Dir,7,X1,Y1,S,SO,Tan,Size,Col,Line).
-setC(Blank,Dir,7,X,Y,S,SO,Tan,Size,Col,Line):-
-	X>=0,
-	Y>=0,
-	P1 is Y * Col,
-	P2 is P1 + X,
-	nth0(P2,Blank,Piece),
-	Piece = Tan,
-	S1 is S +1,
 	X1 is X - 1,
-	Y1 is Y - 1,
-	setC(Blank,Dir,7,X1,Y1,S1,SO,Tan,Size,Col,Line).
+	get_list(7,Blank,X1,Y1,Cols,Lines,OutLista),
+	nth0(Y,Blank,Row),
+	nth0(X,Row,Elem),
+	Lista = [Elem|OutLista]. 
+
+
+%aplica as restriçoes a uma lista de listas, cada valor deve estar entre Bot e Up
+%domain_to_list(?ListOfLists,+Bot,+Up)
+domain_to_list([],_,_).
+domain_to_list([List|H],Bot,Up):-
+	domain(List,Bot,Up),
+	domain_to_list(H,Bot,Up).
 	
+%aplica as restriçoes à primeira fila de uma matriz,(elementos devem estar entre 2 e 6)
+%domain_to_first_line(?Matrix)
+domain_to_first_line([List|_H]):-
+	domain(List,2,6).	
+	
+%cria uma matriz de direções com o tamanho Size
+%create(+Size,-Matrix)
+create(Size,Matrix):-
+	List_length #= Size,
+	length(M,List_length),
+	matrix_generator(Size,Size,M),
+	create_random(Size,Matrix,M,_B),
+	write(Matrix).
+	
+create_random(Size,Matrix,M,B):-
+	domain_to_list(M,0,7),	
+	domain_to_first_line(M),
+	append(M,MM),
+	nth0(1,M,M1),
+	nth0(1,M1,P1),
+	nth0(0,M,M2),
+	nth0(0,M2,P2),
+	random(0,7,R11),
+	random(2,4,R00),
+	P1 #= R11,
+	P2 #= R00,
+	
+	tan_and_white(M,_),
+	list2matrix(MM,Size,M),
+	Matrix = M,
+	((B = N) ; (B\=N,fail)).
 
-%spy(setC),problem(2,A,B),tan_and_white(A,B).
-%problem(1,A,B),tan_and_white(A,B).
-%problem(3,A,B),tan_and_white(A,B).
-%problem(4,A,B),tan_and_white(A,B).
+length_(Length, List) :- length(List, Length).
+
+%transforma uma lista numa lista de listas
+%list2matrix(+List, +RowSize, -Matrix)
+list2matrix(List, RowSize, Matrix) :-
+    length(List, L),
+    HowManyRows is L div RowSize,
+    length(Matrix, HowManyRows),
+    maplist(length_(RowSize), Matrix),
+    append(Matrix, List).
+
+%gera uma maytriz de tamanho Size
+%matrix_generator(+Size,+NLinha,-Matrix)
+matrix_generator(Size,1,Matrix):-	
+	length(M2,Size),
+	M3 = M2,
+	Matrix = [M3].	
+matrix_generator(Size,Left,Matrix):-
+	Left > 1,
+	L is Left - 1,
+	matrix_generator(Size,L,M1),
+	length(M2,Size),
+	append([M2],M1,M3),
+	Matrix = M3.
+
+print_matrix([]).
+print_matrix([H|R]):- 
+	write(H), 
+	nl, 
+	print_matrix(R).
 
 
+problem(1,
+   [[4,4,5,6],
+	[3,3,5,6],
+	[2,1,6,7],
+	[0,2,7,0]]		
+		).	
 
+problem(2,
+	[[4,4,5,6,6],
+	 [2,2,3,4,6],
+	 [1,0,7,6,0],
+	 [1,1,0,0,6],
+	 [0,1,0,7,0]
+	]
+).
 
+problem(3,
+	[[3,2,3,3,2,4],
+	[2,5,3,1,4,0],
+	[1,1,0,2,5,5],
+	[0,0,1,0,0,4],
+	[1,0,2,0,5,0],
+	[0,1,1,1,0,7]
+	]
+).
 
+problem(4, [[3,2,2,3,4,4],[2,1,3,2,5,0],[0,1,2,4,1,5],[2,0,0,0,0,4],[1,1,0,0,6,0],[0,0,1,2,0,7]]).
+
+problem(5,
+   [[2,3,4,5],
+	[2,3,6,5],
+	[1,2,0,0],
+	[1,2,7,7]]		
+		).
+
+problem(6,
+	[[2,3,3,6,5],
+	 [4,4,2,4,4],
+	 [1,3,1,0,7],
+	 [1,2,1,7,0],
+	 [2,0,2,7,0]
+	]
+).
+
+problem(7,
+	[[4,4,4,6,4],
+	 [3,4,3,5,6],
+	 [1,2,0,4,5],
+	 [2,1,6,0,6],
+	 [0,0,2,6,6]
+	]
+).
+problem(8,[
+	[2,3,3,3,2,4],
+	[2,1,4,1,4,0],
+	[0,1,2,0,5,5],
+	[2,0,0,3,0,4],
+	[2,0,1,0,0,0],
+	[0,1,0,2,7,6]
+]).
 
