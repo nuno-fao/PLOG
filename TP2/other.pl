@@ -16,7 +16,7 @@ tan_and_white(Dir,Solution):-
 	nth0(0,Blank,Linha),
 	length(Linha,C),
 	statistics(total_runtime, _),
-	tan_and_white(Blank,Dir,0,0,SizeD,C,L,Solution).
+	tan_and_white(Blank,Dir,0,0,SizeD,C,L,_Solution).
 
 print_time(Msg):-statistics(total_runtime,[_,T]),TS is ((T//10)*10)/1000, nl,write(Msg), write(TS), write('s'), nl, nl.
 
@@ -44,14 +44,14 @@ tan_and_white(Blank,Dir,X,Y,Size,Col,Line,O):-
 	tan_and_white(Blank,Dir,X1,Y1,Size,Col,Line,O).
 
 apply_restriction(Tan,Dir,Blank,X,Y,Cols,Lines):-
-	Tan = 1,
+	Tan #= 1,
 	get_list(Dir,Blank,X,Y,Cols,Lines,Lista),
 	length(Lista,LL),
 	S #= LL - 3,
 	global_cardinality(Lista,[0-S,1-3]).
 
 apply_restriction(Tan,Dir,Blank,X,Y,Cols,Lines):-
-	Tan = 0,
+	Tan #= 0,
 	get_list(Dir,Blank,X,Y,Cols,Lines,Lista),
 	length(Lista,LL),
 	S #= LL - 2,
