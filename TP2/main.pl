@@ -27,10 +27,10 @@ print_time(Msg):-statistics(total_runtime,[_,T]),TS is ((T//10)*10)/1000, nl,wri
 %devolve em no ultimo parametro a solução de dir, verifica se a procura acabou 
 %tan_and_white(+Blank,+_Dir,+X,+Y,+_Size,+Col,+Line,-Blank)
 tan_and_white(Blank,_Dir,X,Y,_Size,Col,Line,Blank):- 
-	(X>=Col; Y>=Line),
-	print_time("Time: "),
-	fd_statistics,statistics,
-	write(Blank).
+	(X>=Col; Y>=Line).
+	%print_time("Time: "),
+	%fd_statistics,statistics,
+	%write(Blank).
 
 %devolve em O a solução para Dir, pesquisa em torno da dir na posição (x,y)
 %tan_and_white(+Blank,+Dir,+X,+Y,+_Size,+Col,+Line,-O)
@@ -198,8 +198,7 @@ create(Size,Matrix):-
 	List_length #= Size,
 	length(M,List_length),
 	matrix_generator(Size,Size,M),
-	create_random(Size,Matrix,M,_B),
-	write(Matrix).
+	create_random(Size,Matrix,M,_B).
 	
 create_random(Size,Matrix,M,B):-
 	domain_to_list(M,0,7),	
