@@ -16,7 +16,7 @@ tan_and_white(Dir,Solution):-
 	nth0(0,Blank,Linha),
 	length(Linha,C),
 	statistics(total_runtime, _),
-	tan_and_white(Blank,Dir,0,0,SizeD,C,L,_Solution).
+	tan_and_white(Blank,Dir,0,0,SizeD,C,L,Solution).
 
 print_time(Msg):-statistics(total_runtime,[_,T]),TS is ((T//10)*10)/1000, nl,write(Msg), write(TS), write('s'), nl, nl.
 
